@@ -510,6 +510,15 @@ WHERE id = 2;
 
 -- DELETE
 
+DELETE FROM pilotos_equipes
+WHERE piloto_id = 22;
+
+DELETE FROM wc
+WHERE piloto_id = 22;
+
+DELETE FROM carro
+WHERE pilotos_id = 22;
+
 DELETE FROM pilotos
 WHERE id = 22;
 
