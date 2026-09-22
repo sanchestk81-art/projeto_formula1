@@ -197,7 +197,7 @@ VALUES
 (20, 'Lance Stroll', 'Canadá', 10, 2017, 18),
 
 (21, 'Sergio Perez', 'México', 11, 2011, 11),
-(22, 'Valtteri Bottas', 'Finlândia', 11, 2013, 77);
+(22, 'Valtteri Bottas', 'Finlândia', 11, 2013, 77),
 
 (23, 'Yuki Tsunoda', 'Japão', 5, 2021, 22);
 
@@ -270,7 +270,7 @@ VALUES
 (28, 'Miami International Autodrome', 20, 19, 5.412),
 (29, 'Las Vegas Strip Circuit', 20, 17, 6.201),
 (30, 'Circuito Internacional de Xangai', 26, 16, 5.451),
-(31, 'Circuito Gilles Villeneuve', 25, 14, 4.361);
+(31, 'Circuito Gilles Villeneuve', 25, 14, 4.361),
 (32, 'Madring', 6, 22, 5.416);
 
 
