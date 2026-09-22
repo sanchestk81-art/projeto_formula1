@@ -199,11 +199,8 @@ VALUES
 (21, 'Sergio Perez', 'México', 11, 2011, 11),
 (22, 'Valtteri Bottas', 'Finlândia', 11, 2013, 77);
 
--- ADICIONANDO O QUE TAVA FALTANDO
-INSERT INTO pilotos
-(id, nome_piloto, nacionalidade, equipe_id, ano_entrou, numero_car)
-VALUES
 (23, 'Yuki Tsunoda', 'Japão', 5, 2021, 22);
+
 
 -- INSERINDO PAISES
 
@@ -274,11 +271,6 @@ VALUES
 (29, 'Las Vegas Strip Circuit', 20, 17, 6.201),
 (30, 'Circuito Internacional de Xangai', 26, 16, 5.451),
 (31, 'Circuito Gilles Villeneuve', 25, 14, 4.361);
-
--- ADICIONANDO O QUE TAVA FALTANDO
-INSERT INTO circuitos
-(id, nome_circuito, pais_id, qtd_curvas, km)
-VALUES
 (32, 'Madring', 6, 22, 5.416);
 
 
