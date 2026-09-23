@@ -1,8 +1,9 @@
 # 🏎️ F1 Database & Championship Management System
+**Produzido por:** Sanches, Luana, Natalia
 
 Sistema em Python com SQLite desenvolvido para gerenciamento de dados históricos da Fórmula 1 (2020 a 2026), acompanhamento de pódios, resultados por circuito e simulação de campeonatos.
 
-> 🚀 **Status do Projeto:** Versão 1.0 (Terminal/CLI) — *Pronto para evolução Web em HTML/CSS/JS*.
+> 🚀 **Status do Projeto:** Versão 1.0 (Terminal/CLI) 
 
 ---
 
