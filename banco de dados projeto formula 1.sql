@@ -197,13 +197,42 @@ VALUES
 (20, 'Lance Stroll', 'Canadá', 10, 2017, 18),
 
 (21, 'Sergio Perez', 'México', 11, 2011, 11),
-(22, 'Valtteri Bottas', 'Finlândia', 11, 2013, 77);
+(22, 'Valtteri Bottas', 'Finlândia', 11, 2013, 77),
 
--- ADICIONANDO O QUE TAVA FALTANDO
-INSERT INTO pilotos
-(id, nome_piloto, nacionalidade, equipe_id, ano_entrou, numero_car)
-VALUES
 (23, 'Yuki Tsunoda', 'Japão', 5, 2021, 22);
+
+
+-- INSERINDO PAISES
+
+INSERT INTO paises
+(id, nome_pais)
+VALUES
+(1, 'Bahrein'),
+(2, 'Arábia Saudita'),
+(3, 'Austrália'),
+(4, 'Itália'),
+(5, 'Portugal'),
+(6, 'Espanha'),
+(7, 'Mônaco'),
+(8, 'Azerbaijão'),
+(9, 'França'),
+(10, 'Áustria'),
+(11, 'Reino Unido'),
+(12, 'Hungria'),
+(13, 'Bélgica'),
+(14, 'Países Baixos'),
+(15, 'Rússia'),
+(16, 'Alemanha'),
+(17, 'Turquia'),
+(18, 'Emirados Árabes Unidos'),
+(19, 'Japão'),
+(20, 'Estados Unidos'),
+(21, 'México'),
+(22, 'Brasil'),
+(23, 'Catar'),
+(24, 'Singapura'),
+(25, 'Canadá'),
+(26, 'China');
 
 
 -- INSERINDO CIRCUITOS
@@ -241,46 +270,9 @@ VALUES
 (28, 'Miami International Autodrome', 20, 19, 5.412),
 (29, 'Las Vegas Strip Circuit', 20, 17, 6.201),
 (30, 'Circuito Internacional de Xangai', 26, 16, 5.451),
-(31, 'Circuito Gilles Villeneuve', 25, 14, 4.361);
-
--- ADICIONANDO O QUE TAVA FALTANDO
-INSERT INTO circuitos
-(id, nome_circuito, pais_id, qtd_curvas, km)
-VALUES
+(31, 'Circuito Gilles Villeneuve', 25, 14, 4.361),
 (32, 'Madring', 6, 22, 5.416);
 
-
--- INSERINDO PAISES
-
-INSERT INTO paises
-(id, nome_pais)
-VALUES
-(1, 'Bahrein'),
-(2, 'Arábia Saudita'),
-(3, 'Austrália'),
-(4, 'Itália'),
-(5, 'Portugal'),
-(6, 'Espanha'),
-(7, 'Mônaco'),
-(8, 'Azerbaijão'),
-(9, 'França'),
-(10, 'Áustria'),
-(11, 'Reino Unido'),
-(12, 'Hungria'),
-(13, 'Bélgica'),
-(14, 'Países Baixos'),
-(15, 'Rússia'),
-(16, 'Alemanha'),
-(17, 'Turquia'),
-(18, 'Emirados Árabes Unidos'),
-(19, 'Japão'),
-(20, 'Estados Unidos'),
-(21, 'México'),
-(22, 'Brasil'),
-(23, 'Catar'),
-(24, 'Singapura'),
-(25, 'Canadá'),
-(26, 'China');
 
 -- INSERINDO CORRIDAS 
 
@@ -509,6 +501,15 @@ WHERE id = 2;
 
 
 -- DELETE
+
+DELETE FROM pilotos_equipes
+WHERE piloto_id = 22;
+
+DELETE FROM wc
+WHERE piloto_id = 22;
+
+DELETE FROM carro
+WHERE pilotos_id = 22;
 
 DELETE FROM pilotos
 WHERE id = 22;
