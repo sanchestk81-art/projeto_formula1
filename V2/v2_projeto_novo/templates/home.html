@@ -8,16 +8,38 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
 </head>
 <body>
-    <div class="banner"> 
+
+    <div class="menu"> 
         <h1>Welcome to the Home Page</h1>
 
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
+
         <ul>
-            <li><a href="{{ url_for('calendário') }}">calendário</a></li>
+            <li><a href="{{ url_for('calendario') }}">calendário</a></li>
             <li><a href="{{ url_for('pilotos_equipes') }}">Pilotos e equipes</a></li>
-            <li><a href="{{ url_for('about') }}">About</a></li>
-            <li><a href="{{ url_for('contact') }}">Contact</a></li>
+            <li><a href="{{ url_for('sobre') }}">Sobre</a></li>
+            <li><a href="{{ url_for('contatos') }}">Contatos</a></li>
         </ul>
     </div>
+
+    <div class="banner">
+        <img src="{{ url_for('static', filename='banner.jpg') }}" alt="Banner">
+
+    <section class = "imagens-menu">
+  
+
+    <h1>corridas 2026</h1>
+    <div class="conteudo">
+        <img src="{{ url_for('static', filename='b_brasil.jpg') }}" alt="bandeira Brasil">
+        <img src="{{ url_for('static', filename='2.jpeg') }}" alt="">
+        <img src="{{ url_for('static', filename='3.jpeg') }}" alt="">
+        <img src="{{ url_for('static', filename='4.jpeg') }}" alt="">
+        <img src="{{ url_for('static', filename='HF3.jpeg') }}" alt="">
+        <img src="{{ url_for('static', filename='6.jpeg') }}" alt="">
+        <img src="" alt="">
+        <img src="" alt="">
+    </div>
+
     
 </body>
 </html>

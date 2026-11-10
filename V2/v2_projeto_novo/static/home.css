@@ -1,7 +1,12 @@
 body{
-    background-color: #d42d2d;
+    background-color: #c1121f;
+}
+.menu{
+    background-color: #ae1f23;
+    border-radius: 10px;
+
 }
 .banner{
-    background-color: #4422d8;
-    border-radius: 10px;
+    margin-top: 20px;
+    text-align: center;
 }
