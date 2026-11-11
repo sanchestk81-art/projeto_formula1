@@ -1,4 +1,155 @@
 <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pit Wall | Home</title>
+  <meta name="description" content="Calendário, pilotos, equipes e loja da temporada.">
+ 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+ 
+  <link rel="stylesheet" href="static/home.css">
+  <script src="templates/home.js" defer></script>
+</head>
+<body>
+ 
+  <!-- ===== CABEÇALHO / MENU ===== -->
+  <header class="topo">
+    <div class="topo__interno">
+      <a href="/static/img/1.png" class="logo" aria-label="SETOR F1, página inicial">
+        <span class="logo__bandeira" aria-hidden="true"></span>
+        SETOR F1
+      </a>
+ 
+      <button class="menu-botao" id="menuBotao" aria-expanded="false" aria-controls="menu">
+        <span class="menu-botao__texto">Menu</span>
+        <span class="menu-botao__barras" aria-hidden="true"></span>
+      </button>
+ 
+      <nav class="menu" id="menu" aria-label="Navegação principal">
+        <ul>
+          <li><a href="index.html" class="ativo" aria-current="page">Início</a></li>
+          <li><a href="calendario.html">Calendário</a></li>
+          <li><a href="pilotos.html">Pilotos</a></li>
+          <li><a href="equipes.html">Equipes</a></li>
+          <li><a href="loja.html">Loja</a></li>
+          <li><a href="sobre.html">Sobre</a></li>
+          <li><a href="contato.html" class="menu__destaque">Contato</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+ 
+  <main>
+ 
+    <!-- ===== HERO ===== -->
+    <section class="hero">
+      <div class="hero__conteudo">
+        <h1 class="hero__titulo">
+          Todo o grid<br>em um só lugar.
+        </h1>
+        <p class="hero__texto">
+          Acompanhe o calendário, conheça pilotos e equipes e garanta o seu
+          item na loja oficial da temporada.
+        </p>
+        <div class="hero__acoes">
+          <a href="calendario.html" class="botao botao--principal">Ver calendário</a>
+          <a href="pilotos.html" class="botao botao--secundario">Conhecer os pilotos</a>
+        </div>
+      </div>
+ 
+      <!-- Contagem regressiva (data configurada no js/script.js) -->
+      <aside class="largada" aria-label="Próxima corrida">
+        <p class="largada__titulo">Próxima largada</p>
+        <h2 class="largada__gp" id="nomeGP">Grande Prêmio de Abu Dhabi</h2>
+        <div class="largada__relogio" id="relogio" role="timer" aria-live="off">
+          <div><strong id="cdDias">--</strong><span>dias</span></div>
+          <div><strong id="cdHoras">--</strong><span>horas</span></div>
+          <div><strong id="cdMin">--</strong><span>min</span></div>
+          <div><strong id="cdSeg">--</strong><span>seg</span></div>
+        </div>
+      </aside>
+ 
+      <div class="faixa-xadrez" aria-hidden="true"></div>
+    </section>
+ 
+    <!-- ===== ATALHOS PARA AS PÁGINAS ===== -->
+    <section class="secao" aria-labelledby="tituloExplorar">
+      <h2 class="secao__titulo" id="tituloExplorar">Explore o site</h2>
+ 
+      <div class="atalhos">
+        <a href="calendario.html" class="atalho atalho--grande">
+          <h3>Calendário</h3>
+          <p>Todas as etapas da temporada, com data, pista e horário.</p>
+        </a>
+        <a href="pilotos.html" class="atalho">
+          <h3>Pilotos</h3>
+          <p>Perfis, números e resultados de cada piloto.</p>
+        </a>
+        <a href="equipes.html" class="atalho">
+          <h3>Equipes</h3>
+          <p>Construtores, carros e história de cada time.</p>
+        </a>
+        <a href="loja.html" class="atalho atalho--destaque">
+          <h3>Loja</h3>
+          <p>Bonés, camisas e miniaturas oficiais.</p>
+        </a>
+      </div>
+    </section>
+ 
+    <!-- ===== CLASSIFICAÇÃO (exemplo - depois vem do banco de dados) ===== -->
+    <section class="secao secao--escura" aria-labelledby="tituloClass">
+      <div class="secao__miolo">
+        <h2 class="secao__titulo" id="tituloClass">Classificação de pilotos</h2>
+        <p class="secao__apoio">Dados de exemplo. Esta tabela será preenchida pelo banco de dados.</p>
+ 
+        <div class="tabela-rolagem">
+          <table class="tabela">
+            <thead>
+              <tr>
+                <th scope="col">Pos.</th>
+                <th scope="col">Piloto</th>
+                <th scope="col">Equipe</th>
+                <th scope="col" class="num">Pontos</th>
+              </tr>
+            </thead>
+            <tbody id="corpoClassificacao">
+              <tr><td>1</td><td>Piloto A</td><td>Equipe X</td><td class="num">390</td></tr>
+              <tr><td>2</td><td>Piloto B</td><td>Equipe Y</td><td class="num">372</td></tr>
+              <tr><td>3</td><td>Piloto C</td><td>Equipe X</td><td class="num">341</td></tr>
+              <tr><td>4</td><td>Piloto D</td><td>Equipe Z</td><td class="num">305</td></tr>
+              <tr><td>5</td><td>Piloto E</td><td>Equipe Y</td><td class="num">288</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+ 
+  </main>
+ 
+  <!-- ===== RODAPÉ ===== -->
+  <footer class="rodape">
+    <div class="rodape__interno">
+      <p class="rodape__marca">SETOR F1</p>
+      <ul class="rodape__links">
+        <li><a href="templates/sobre.html">Sobre</a></li>
+        <li><a href="templates/contato.html">Contato</a></li>
+        <li><a href="templates/loja.html">Loja</a></li>
+      </ul>
+      <p class="rodape__copy">&copy; 2026 Pit Wall. Projeto acadêmico.</p>
+    </div>
+  </footer>
+ 
+</body>
+</html>
+ 
+
+
+
+
+<!--<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -12,7 +163,7 @@
     <div class="menu"> 
         <h1>Welcome to the Home Page</h1>
 
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
+        <img src="{{ url_for('static', filename='img/1.png') }}" alt="Logo" class="logo">
 
         <ul>
             <li><a href="{{ url_for('calendario') }}">calendário</a></li>
@@ -32,7 +183,7 @@
 </html>
 
 
-  <!--<h1>corridas 2026</h1>
+  <h1>corridas 2026</h1>
     <div class="conteudo">
         <img src="{{ url_for('static', filename='b_italia.jpg') }}" alt="Bandeira da itália">
         <img src="{{ url_for('static', filename='b_espanha.jpg') }}" alt="Bandeira do Brasil">
