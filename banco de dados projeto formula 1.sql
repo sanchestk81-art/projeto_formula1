@@ -493,6 +493,8 @@ VALUES
 (23, 23, 5, 23, 1);
 
 
+
+
 -- UPDATE
 
 UPDATE equipes

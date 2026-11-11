@@ -24,6 +24,7 @@ CREATE TABLE cirquitos (
   
 );
 
+
 CREATE TABLE pais (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL
