@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Feedbacks Recebidos • Portal F1{% endblock %}
+
+{% block content %}
+<div class="section-header">
+    <div>
+        <h1 class="section-title">Feedbacks da Comunidade</h1>
+        <p style="color: var(--f1-text-muted); font-size: 0.95rem; margin-top: 5px;">
+            Mensagens, elogios, críticas e sugestões registradas no banco de dados pelos usuários.
+        </p>
+    </div>
+    <a href="{{ url_for('sobre') }}" class="btn btn-primary" style="font-size: 0.8rem;">
+        + Enviar Novo Feedback
+    </a>
+</div>
+
+<div class="grid-2">
+    {% for msg in mensagens %}
+    <article class="card" style="padding: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 10px;">
+            <div>
+                <h3 style="font-size: 1.15rem; color: #fff; margin-bottom: 4px;">{{ msg.assunto }}</h3>
+                <span style="font-size: 0.85rem; color: var(--f1-text-muted);">
+                    De: <strong>{{ msg.nome }}</strong> ({{ msg.email }})
+                </span>
+            </div>
+
+            {% if msg.tipo_feedback == 'Elogio' %}
+            <span class="race-badge-status" style="background-color: #27ae60; color: #fff;">Elogio</span>
+            {% elif msg.tipo_feedback == 'Crítica' %}
+            <span class="race-badge-status" style="background-color: var(--f1-red); color: #fff;">Crítica</span>
+            {% elif msg.tipo_feedback == 'Sugestão' %}
+            <span class="race-badge-status" style="background-color: #f39c12; color: #fff;">Sugestão</span>
+            {% else %}
+            <span class="race-badge-status" style="background-color: var(--f1-accent); color: #fff;">{{ msg.tipo_feedback }}</span>
+            {% endif %}
+        </div>
+
+        <p style="font-size: 0.95rem; color: #e0e0e0; line-height: 1.6; margin-bottom: 15px; white-space: pre-line;">
+            {{ msg.mensagem }}
+        </p>
+
+        <div class="card-footer-meta" style="margin-top: auto; padding-top: 10px;">
+            <span>Registrado em: {{ msg.data_envio.strftime('%d/%m/%Y às %H:%M') if msg.data_envio else '' }}</span>
+        </div>
+    </article>
+    {% else %}
+    <p style="color: var(--f1-text-muted);">Nenhum feedback enviado até o momento.</p>
+    {% endfor %}
+</div>
+{% endblock %}

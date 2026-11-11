@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}{{ noticia.titulo }} • Portal F1{% endblock %}
+
+{% block content %}
+<div style="max-width: 860px; margin: 0 auto;">
+    <a href="{{ url_for('index') }}" class="btn btn-secondary" style="margin-bottom: 25px;">
+        &larr; Voltar para as Notícias
+    </a>
+
+    <article class="card" style="padding: 35px;">
+        <span class="card-tag">{{ noticia.categoria }}</span>
+        <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 15px; line-height: 1.25; color: #fff;">
+            {{ noticia.titulo }}
+        </h1>
+
+        {% if noticia.subtitulo %}
+        <p style="font-size: 1.15rem; color: #d0d0d0; margin-bottom: 20px; line-height: 1.5; font-style: italic;">
+            {{ noticia.subtitulo }}
+        </p>
+        {% endif %}
+
+        <div style="display: flex; gap: 15px; font-size: 0.85rem; color: var(--f1-text-muted); border-bottom: 1px solid var(--f1-card-border); padding-bottom: 18px; margin-bottom: 25px;">
+            <span><strong>Autor:</strong> {{ noticia.autor }}</span>
+            <span>&bull;</span>
+            <span><strong>Data:</strong> {{ noticia.data_publicacao.strftime('%d/%m/%Y') if noticia.data_publicacao else '' }}</span>
+        </div>
+
+        {% if noticia.imagem_url %}
+        <div style="border-radius: 8px; overflow: hidden; margin-bottom: 30px; max-height: 450px;">
+            <img src="{{ noticia.imagem_url }}" alt="{{ noticia.titulo }}" style="width: 100%; object-fit: cover;" onerror="this.style.display='none';">
+        </div>
+        {% endif %}
+
+        <div style="font-size: 1.05rem; line-height: 1.8; color: #e6e6e6; white-space: pre-line;">
+            {{ noticia.conteudo }}
+        </div>
+    </article>
+</div>
+{% endblock %}

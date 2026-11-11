@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Equipes & Carros • Construtores do Setor F1{% endblock %}
+
+{% block content %}
+<div class="section-header">
+    <div>
+        <h1 class="section-title">Equipes & Monopostos de Corrida</h1>
+        <p style="color: var(--f1-text-muted); font-size: 0.95rem; margin-top: 5px;">
+            Conheça as escuderias do grid, seus bólidos de alta tecnologia, motores, sedes, pilotos titulares e pilotos reservas.
+        </p>
+    </div>
+    {% if session.get('usuario_id') and session.get('usuario_tipo') == 'admin' %}
+    <a href="{{ url_for('admin_dashboard') }}#aba-equipes" class="btn btn-secondary" style="font-size: 0.82rem; background: #2980b9;">
+        ⚙️ Gerenciar Equipes & Pilotos
+    </a>
+    {% endif %}
+</div>
+
+<div class="grid-2">
+    {% for equipe in equipes %}
+    <article class="team-card" style="border-left: 6px solid {{ equipe.cor_primaria or '#e10600' }};">
+        
+        <!-- CABEÇALHO DA EQUIPE -->
+        <div class="team-card-header">
+            <div class="team-card-title">
+                <h3>{{ equipe.nome }}</h3>
+                <p>{{ equipe.nome_completo }}</p>
+            </div>
+            {% if equipe.logo_url %}
+            <img src="{{ equipe.logo_url }}" alt="Logo {{ equipe.nome }}" class="team-logo-preview" onerror="this.style.display='none';">
+            {% endif %}
+        </div>
+
+        <!-- FOTO E MODELO DO CARRO DA EQUIPE -->
+        {% if equipe.carro_imagem_url or equipe.carro_modelo %}
+        <div class="team-car-container">
+            <div class="team-car-img-box">
+                <img src="{{ equipe.carro_imagem_url }}" alt="Carro {{ equipe.carro_modelo }}" onerror="this.src='https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80';">
+                <span class="car-badge-tag">{{ equipe.carro_modelo or 'Monoposto F1' }}</span>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- ESPECIFICAÇÕES DA EQUIPE -->
+        <div class="team-specs-list">
+            <div class="team-spec-item">
+                <span class="label">Sede</span>
+                <span class="value">{{ equipe.sede or equipe.pais_origem }}</span>
+            </div>
+            <div class="team-spec-item">
+                <span class="label">Chefe de Equipe</span>
+                <span class="value">{{ equipe.chefe_equipe or 'N/A' }}</span>
+            </div>
+            <div class="team-spec-item">
+                <span class="label">Motor / Unidade</span>
+                <span class="value">{{ equipe.motor or 'N/A' }}</span>
+            </div>
+            <div class="team-spec-item">
+                <span class="label">Títulos Mundiais</span>
+                <span class="value" style="color: var(--f1-gold);">{{ equipe.titulos_construtores }}</span>
+            </div>
+            <div class="team-spec-item">
+                <span class="label">Estreia na F1</span>
+                <span class="value">{{ equipe.ano_estreia or 'N/A' }}</span>
+            </div>
+        </div>
+
+        <!-- HISTÓRIA DA EQUIPE -->
+        <div class="team-history-text">
+            <strong style="color: #fff; display: block; margin-bottom: 6px; font-size: 0.85rem; text-transform: uppercase;">
+                 História da Escuderia
+            </strong>
+            {{ equipe.historia }}
+        </div>
+
+        <!-- PILOTOS DA EQUIPE: TITULARES E RESERVAS -->
+        <div style="border-top: 1px solid var(--f1-card-border); padding-top: 15px; margin-top: auto;">
+            
+            <!-- TITULARES -->
+            <div style="margin-bottom: 12px;">
+                <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--f1-text-muted); font-weight: 700; display: block; margin-bottom: 8px;">
+                    🏎️ Pilotos Titulares (Grid Oficial):
+                </span>
+                <div class="team-drivers-pill-container">
+                    {% for piloto in equipe.titulares %}
+                    <a href="{{ url_for('piloto_detalhe', id=piloto.id) }}" class="driver-pill" style="border-color: {{ equipe.cor_primaria or '#e10600' }};">
+                        <span style="color: var(--f1-gold); font-weight: 800;">#{{ piloto.numero }}</span>
+                        <span>{{ piloto.nome }}</span>
+                    </a>
+                    {% else %}
+                    <span style="font-size: 0.82rem; color: var(--f1-text-muted);">Aguardando anúncio de titulares.</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- RESERVAS / TESTES -->
+            <div>
+                <span style="font-size: 0.75rem; text-transform: uppercase; color: #aaa; font-weight: 700; display: block; margin-bottom: 8px;">
+                    🛡️ Pilotos Reservas & de Testes:
+                </span>
+                <div class="team-drivers-pill-container">
+                    {% for piloto in equipe.reservas %}
+                    <a href="{{ url_for('piloto_detalhe', id=piloto.id) }}" class="driver-pill" style="border-color: #555; background: rgba(255,255,255,0.03);">
+                        <span style="color: var(--f1-silver); font-weight: 700;">#{{ piloto.numero }}</span>
+                        <span>{{ piloto.nome }}</span>
+                        <span style="font-size: 0.65rem; color: #ffb800; font-weight: 800;">(Reserva)</span>
+                    </a>
+                    {% else %}
+                    <span style="font-size: 0.8rem; color: var(--f1-text-muted);">Nenhum reserva registrado.</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
+        {% if session.get('usuario_id') and session.get('usuario_tipo') == 'admin' %}
+        <div style="margin-top: 15px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); text-align: right;">
+            <a href="{{ url_for('admin_editar_equipe', id=equipe.id) }}" class="btn btn-secondary" style="font-size: 0.75rem; padding: 6px 14px; background: #2980b9;">
+                ✏️ Editar Equipe & Pilotos no Admin
+            </a>
+        </div>
+        {% endif %}
+
+    </article>
+    {% else %}
+    <p style="color: var(--f1-text-muted);">Nenhuma equipe cadastrada no momento.</p>
+    {% endfor %}
+</div>
+{% endblock %}

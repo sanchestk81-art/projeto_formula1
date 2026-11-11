@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block title %}Setor F1 • Notícias, Classificação da Temporada & Fan Store{% endblock %}
+
+{% block content %}
+
+    <!-- =================================================================== -->
+    <!-- CARROSSEL / BANNER ROTATIVO PRINCIPAL (EDITÁVEL PELO ADMIN)         -->
+    <!-- =================================================================== -->
+    {% if banners %}
+    <section class="hero-carousel-container" id="heroCarousel">
+        <div class="carousel-track">
+            {% for b in banners %}
+            <div class="carousel-slide {% if loop.first %}active{% endif %}" style="background-image: linear-gradient(135deg, rgba(225, 6, 0, 0.85) 0%, rgba(15, 15, 23, 0.95) 75%), url('{{ b.imagem_url }}');">
+                <div class="slide-content">
+                    <span class="hero-tag">{{ b.tag_destaque }}</span>
+                    <h1 class="hero-title">{{ b.titulo }}</h1>
+                    <p class="hero-subtitle">{{ b.subtitulo }}</p>
+                    <a href="{{ b.link_url }}" class="btn btn-primary" style="align-self: flex-start;">
+                        Acessar Agora &rarr;
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- CONTROLES DO CARROSSEL -->
+        <button type="button" class="carousel-btn prev-btn" onclick="mudarSlide(-1)" aria-label="Slide anterior">&#10094;</button>
+        <button type="button" class="carousel-btn next-btn" onclick="mudarSlide(1)" aria-label="Próximo slide">&#10095;</button>
+
+        <!-- INDICADORES (DOTS) -->
+        <div class="carousel-indicators">
+            {% for b in banners %}
+            <button type="button" class="indicator-dot {% if loop.first %}active{% endif %}" onclick="irParaSlide({{ loop.index0 }})" aria-label="Slide {{ loop.index }}"></button>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- FAIXA DA PRÓXIMA CORRIDA (COM BANDEIRA) -->
+    {% if proxima_corrida %}
+    <div class="next-race-alert-strip">
+        <div class="race-flag-icon">{{ proxima_corrida.pais_codigo|bandeira }}</div>
+        <div>
+            <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--f1-gold); font-weight: 800;">
+                Próxima Etapa no Calendário Oficial
+            </span>
+            <h3 style="font-size: 1.15rem; color: #fff; margin: 2px 0;">
+                {{ proxima_corrida.nome_gp }} • {{ proxima_corrida.circuito }}
+            </h3>
+        </div>
+        <div style="margin-left: auto; display: flex; align-items: center; gap: 15px;">
+            <span class="race-date-pill">
+                {{ proxima_corrida.data_corrida.strftime('%d/%m/%Y') }}
+            </span>
+            <a href="{{ url_for('corridas') }}" class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.78rem;">
+                Ver Pódios & Detalhes &rarr;
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- =================================================================== -->
+    <!-- DATATABLE INTERATIVA: PILOTOS DA TEMPORADA E CHANCE DE TÍTULO       -->
+    <!-- =================================================================== -->
+    <section style="margin-bottom: 50px;">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Classificação da Temporada & Probabilidade de Título</h2>
+                <p style="color: var(--f1-text-muted); font-size: 0.92rem; margin-top: 4px;">
+                    Tabela em tempo real com os pontos somados pelos pilotos titulares e a probabilidade estatística de vitória no Mundial de Pilotos.
+                </p>
+            </div>
+            <div>
+                <input type="text" id="filtroPilotosTable" class="form-control" placeholder="🔍 Filtrar por piloto ou equipe..." style="padding: 8px 14px; font-size: 0.85rem; width: 260px;">
+            </div>
+        </div>
+
+        <div class="datatable-responsive-wrapper">
+            <table class="f1-datatable" id="tabelaPilotos">
+                <thead>
+                    <tr>
+                        <th style="width: 60px; text-align: center;">POS</th>
+                        <th>PILOTO</th>
+                        <th>EQUIPE</th>
+                        <th style="text-align: center;">PONTOS</th>
+                        <th style="width: 250px;">CHANCE DE VENCER O CAMPEONATO</th>
+                        <th style="text-align: center; width: 100px;">AÇÕES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in pilotos_tabela %}
+                    <tr>
+                        <td style="text-align: center; font-weight: 900; font-size: 1.1rem; color: {% if loop.index == 1 %}var(--f1-gold){% elif loop.index == 2 %}var(--f1-silver){% elif loop.index == 3 %}var(--f1-bronze){% else %}#fff{% endif %};">
+                            {{ loop.index }}º
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="table-avatar">
+                                    <img src="{{ p.foto_url }}" alt="{{ p.nome }}" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png';">
+                                </div>
+                                <div>
+                                    <strong style="color: #fff; font-size: 0.98rem; display: block;">
+                                        {{ p.nome }} <span style="font-size: 0.9rem;">{{ p.pais_codigo|bandeira }}</span>
+                                    </strong>
+                                    <span style="font-size: 0.75rem; color: var(--f1-text-muted);">
+                                        Nº {{ p.numero }} • {{ p.nacionalidade }}
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="team-badge" style="background-color: {{ p.cor_primaria or '#383854' }}; color: #fff;">
+                                {{ p.equipe_nome or 'Independente' }}
+                            </span>
+                        </td>
+                        <td style="text-align: center; font-weight: 800; font-size: 1.15rem; color: #fff;">
+                            {{ p.pontos_temporada }} <span style="font-size: 0.72rem; color: var(--f1-text-muted);">PTS</span>
+                        </td>
+                        <td>
+                            <div class="chance-progress-container">
+                                <div class="chance-progress-bar" style="width: {{ p.chance_titulo }}%; background-color: {% if p.chance_titulo > 50 %}var(--f1-green){% elif p.chance_titulo > 15 %}var(--f1-gold){% else %}var(--f1-red){% endif %};"></div>
+                                <span class="chance-label">{{ p.chance_titulo }}%</span>
+                            </div>
+                        </td>
+                        <td style="text-align: center;">
+                            <a href="{{ url_for('piloto_detalhe', id=p.id) }}" class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.72rem;">
+                                Perfil
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- ÁREA DE ÚLTIMAS NOTÍCIAS                                            -->
+    <!-- =================================================================== -->
+    <section style="margin-bottom: 50px;">
+        <div class="section-header">
+            <h2 class="section-title">Últimos Acontecimentos do Paddock</h2>
+            <span style="font-size: 0.88rem; color: var(--f1-text-muted);">Notícias Oficiais Setor F1</span>
+        </div>
+
+        <div class="grid-3">
+            {% for noticia in noticias %}
+            <article class="card">
+                <div class="card-img-wrapper">
+                    <img src="{{ noticia.imagem_url }}" alt="{{ noticia.titulo }}" onerror="this.src='https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80';">
+                </div>
+                <div class="card-body">
+                    <span class="card-tag">{{ noticia.categoria }}</span>
+                    <h3 class="card-title">{{ noticia.titulo }}</h3>
+                    <p class="card-text">{{ noticia.subtitulo or (noticia.conteudo[:120] ~ '...') }}</p>
+                    
+                    <div class="card-footer-meta">
+                        <span>{{ noticia.data_publicacao.strftime('%d/%m/%Y') if noticia.data_publicacao else '' }}</span>
+                        <a href="{{ url_for('noticia_detalhe', id=noticia.id) }}" class="btn btn-secondary" style="padding: 5px 12px; font-size: 0.75rem;">
+                            Ler mais
+                        </a>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- ATALHOS RÁPIDOS PARA O SETOR F1 -->
+    <section>
+        <div class="section-header">
+            <h2 class="section-title">Explore os Setores</h2>
+        </div>
+
+        <div class="grid-3">
+            <div class="card" style="padding: 24px;">
+                <h3 style="color: #fff; margin-bottom: 8px;">🏎️ Grid & Acervo de Pilotos</h3>
+                <p style="color: var(--f1-text-muted); font-size: 0.9rem; margin-bottom: 16px;">
+                    Pesquise pilotos de todas as épocas (incluindo 2020 e clássicos). Saiba como entraram na F1.
+                </p>
+                <a href="{{ url_for('pilotos') }}" class="btn btn-primary" style="margin-top: auto;">Ver Pilotos</a>
+            </div>
+
+            <div class="card" style="padding: 24px;">
+                <h3 style="color: #fff; margin-bottom: 8px;">🏁 Corridas & Pódios Antigos</h3>
+                <p style="color: var(--f1-text-muted); font-size: 0.9rem; margin-bottom: 16px;">
+                    Reviva o GP da Áustria de 2020, o épico GP de São Paulo e veja as próximas corridas com bandeiras.
+                </p>
+                <a href="{{ url_for('corridas') }}" class="btn btn-primary" style="margin-top: auto;">Ver Corridas</a>
+            </div>
+
+            <div class="card" style="padding: 24px;">
+                <h3 style="color: #fff; margin-bottom: 8px;">🛍️ Loja Oficial para Fãs</h3>
+                <p style="color: var(--f1-text-muted); font-size: 0.9rem; margin-bottom: 16px;">
+                    Produtos com tags exclusivas: Mais Vendidos, Edição Limitada e Nova Coleção.
+                </p>
+                <a href="{{ url_for('loja') }}" class="btn btn-primary" style="margin-top: auto;">Acessar Loja</a>
+            </div>
+        </div>
+    </section>
+
+<!-- SCRIPT DO CARROSSEL AUTOMATIZADO E FILTRO DA DATATABLE -->
+<script>
+    let slideAtual = 0;
+    const slides = document.querySelectorAll('.carousel-slide');
+    const dots = document.querySelectorAll('.indicator-dot');
+    let intervaloCarrossel;
+
+    function mostrarSlide(idx) {
+        if (!slides.length) return;
+        if (idx >= slides.length) slideAtual = 0;
+        else if (idx < 0) slideAtual = slides.length - 1;
+        else slideAtual = idx;
+
+        slides.forEach((s, i) => {
+            s.classList.toggle('active', i === slideAtual);
+        });
+
+        dots.forEach((d, i) => {
+            d.classList.toggle('active', i === slideAtual);
+        });
+    }
+
+    function mudarSlide(delta) {
+        mostrarSlide(slideAtual + delta);
+        reiniciarIntervalo();
+    }
+
+    function irParaSlide(idx) {
+        mostrarSlide(idx);
+        reiniciarIntervalo();
+    }
+
+    function iniciarCarrossel() {
+        intervaloCarrossel = setInterval(() => {
+            mostrarSlide(slideAtual + 1);
+        }, 5000); // Passa a cada 5 segundos
+    }
+
+    function reiniciarIntervalo() {
+        clearInterval(intervaloCarrossel);
+        iniciarCarrossel();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        iniciarCarrossel();
+
+        // Pausa no hover do carrossel
+        const carousel = document.getElementById('heroCarousel');
+        if (carousel) {
+            carousel.addEventListener('mouseenter', () => clearInterval(intervaloCarrossel));
+            carousel.addEventListener('mouseleave', () => iniciarCarrossel());
+        }
+
+        // Filtro em tempo real para a DataTable de pilotos
+        const filtroInput = document.getElementById('filtroPilotosTable');
+        const linhasTabela = document.querySelectorAll('#tabelaPilotos tbody tr');
+
+        if (filtroInput) {
+            filtroInput.addEventListener('keyup', (e) => {
+                const termo = e.target.value.toLowerCase().trim();
+                linhasTabela.forEach(tr => {
+                    const textoLinha = tr.textContent.toLowerCase();
+                    tr.style.display = textoLinha.includes(termo) ? '' : 'none';
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

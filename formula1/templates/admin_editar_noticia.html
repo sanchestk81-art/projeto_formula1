@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Notícia • Painel Setor F1{% endblock %}
+
+{% block content %}
+<div style="max-width: 860px; margin: 0 auto;">
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary" style="margin-bottom: 25px;">
+        &larr; Voltar ao Painel Admin
+    </a>
+
+    <div class="card" style="padding: 35px; border-top: 5px solid var(--f1-gold);">
+        <h1 style="color: #fff; font-size: 1.6rem; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+            ✏️ Editar Notícia #{{ noticia.id }}
+        </h1>
+
+        <form action="{{ url_for('admin_editar_noticia', id=noticia.id) }}" method="POST">
+            <div class="form-group">
+                <label class="form-label">Título da Notícia *</label>
+                <input type="text" name="titulo" class="form-control" value="{{ noticia.titulo }}" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Subtítulo / Linha Fina</label>
+                <input type="text" name="subtitulo" class="form-control" value="{{ noticia.subtitulo or '' }}">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="form-group">
+                    <label class="form-label">Categoria *</label>
+                    <select name="categoria" class="form-control" required>
+                        <option value="Campeonato" {% if noticia.categoria == 'Campeonato' %}selected{% endif %}>Campeonato</option>
+                        <option value="Mercado & Brasil" {% if noticia.categoria == 'Mercado & Brasil' %}selected{% endif %}>Mercado & Brasil</option>
+                        <option value="Análise Técnica" {% if noticia.categoria == 'Análise Técnica' %}selected{% endif %}>Análise Técnica</option>
+                        <option value="Bastidores" {% if noticia.categoria == 'Bastidores' %}selected{% endif %}>Bastidores</option>
+                        <option value="Geral" {% if noticia.categoria == 'Geral' %}selected{% endif %}>Geral</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">URL da Imagem de Capa</label>
+                    <input type="text" name="imagem_url" class="form-control" value="{{ noticia.imagem_url or '' }}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Conteúdo Completo da Matéria *</label>
+                <textarea name="conteudo" class="form-control" rows="8" required>{{ noticia.conteudo }}</textarea>
+            </div>
+
+            <div style="display: flex; gap: 25px; margin-bottom: 25px; flex-wrap: wrap;">
+                <label style="color: #fff; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" name="destaque" value="true" {% if noticia.destaque %}checked{% endif %} style="width: 18px; height: 18px;">
+                    Definir como Destaque Principal
+                </label>
+
+                <label style="color: #fff; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" name="no_banner" value="true" {% if noticia.no_banner %}checked{% endif %} style="width: 18px; height: 18px;">
+                    Exibir no Banner Rotativo da Home
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="padding: 12px 25px;">
+                💾 Salvar Alterações na Notícia
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

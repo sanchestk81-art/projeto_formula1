@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Meus Pedidos • Setor F1{% endblock %}
+
+{% block content %}
+<div class="section-header">
+    <div>
+        <h1 class="section-title">📦 Meus Pedidos Realizados</h1>
+        <p style="color: var(--f1-text-muted); font-size: 0.95rem; margin-top: 5px;">
+            Acompanhe o status das suas compras oficiais na Fan Store do Setor F1.
+        </p>
+    </div>
+    <a href="{{ url_for('loja') }}" class="btn btn-primary" style="font-size: 0.8rem;">
+        + Ir para a Loja
+    </a>
+</div>
+
+{% if pedidos %}
+<div style="display: flex; flex-direction: column; gap: 20px;">
+    {% for ped in pedidos %}
+    <article class="card" style="padding: 24px; display: flex; flex-direction: row; gap: 25px; align-items: center; flex-wrap: wrap;">
+        <div style="width: 100px; height: 100px; border-radius: 8px; overflow: hidden; background: #000; flex-shrink: 0;">
+            <img src="{{ ped.produto_imagem }}" alt="{{ ped.produto_nome }}" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+
+        <div style="flex: 2; min-width: 200px;">
+            <span class="card-tag">{{ ped.produto_categoria }} &bull; Pedido #{{ ped.id }}</span>
+            <h3 style="color: #fff; font-size: 1.25rem; margin-bottom: 4px;">{{ ped.produto_nome }}</h3>
+            <p style="font-size: 0.85rem; color: var(--f1-text-muted);">
+                Quantidade: <strong>{{ ped.quantidade }} un.</strong> &bull; Data: {{ ped.data_pedido.strftime('%d/%m/%Y às %H:%M') if ped.data_pedido else '' }}
+            </p>
+        </div>
+
+        <div style="text-align: right; min-width: 140px;">
+            <span class="race-badge-status badge-finished" style="margin-bottom: 8px;">{{ ped.status }}</span>
+            <div style="font-size: 1.3rem; font-weight: 800; color: var(--f1-gold);">
+                R$ {{ "%.2f"|format(ped.valor_total)|replace('.', ',') }}
+            </div>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card" style="padding: 50px; text-align: center;">
+    <h3 style="color: #fff; margin-bottom: 10px;">Você ainda não realizou nenhum pedido.</h3>
+    <p style="color: var(--f1-text-muted); margin-bottom: 25px;">Explore os itens oficiais da nossa loja e leve a emoção do automobilismo para sua casa!</p>
+    <a href="{{ url_for('loja') }}" class="btn btn-primary" style="display: inline-flex;">
+        Explorar Produtos da Loja &rarr;
+    </a>
+</div>
+{% endif %}
+{% endblock %}

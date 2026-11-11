@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Corridas & Pódios Históricos • Setor F1{% endblock %}
+
+{% block content %}
+<div class="section-header">
+    <div>
+        <h1 class="section-title">Corridas & Resultados da Fórmula 1</h1>
+        <p style="color: var(--f1-text-muted); font-size: 0.95rem; margin-top: 5px;">
+            Acompanhe os resultados, pódios históricos, pole positions, voltas mais rápidas e a classificação completa de cada prova.
+        </p>
+    </div>
+</div>
+
+<!-- FILTRO POR TEMPORADA -->
+<div class="filter-bar-container">
+    <span class="filter-label"> Filtrar por Temporada:</span>
+    <div class="filter-chips">
+        <a href="{{ url_for('corridas', ano='todos') }}" class="filter-chip {% if ano_selecionado == 'todos' %}active{% endif %}">
+            Todas as Corridas
+        </a>
+        {% for a in anos_disponiveis %}
+        <a href="{{ url_for('corridas', ano=a) }}" class="filter-chip {% if ano_selecionado == a|string %}active{% endif %}">
+            Temporada {{ a }}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- CORRIDA ANTERIOR / DESTAQUE -->
+{% if corrida_destaque %}
+<section class="race-highlight-box" style="margin-top: 25px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+        <span class="race-badge-status badge-finished">
+             Resultado Oficial • Temporada {{ corrida_destaque.ano }} (Etapa {{ corrida_destaque.rodada }})
+        </span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 1.5rem;">{{ corrida_destaque.pais_codigo|bandeira }}</span>
+            <span style="font-size: 0.95rem; color: #fff; font-weight: 700;">
+                {{ corrida_destaque.pais }} &bull; {{ corrida_destaque.data_corrida.strftime('%d/%m/%Y') if corrida_destaque.data_corrida else '' }}
+            </span>
+        </div>
+    </div>
+
+    <h2 style="font-size: 2.2rem; font-weight: 900; color: #fff; margin-bottom: 6px;">
+        {{ corrida_destaque.nome_gp }}
+    </h2>
+    <p style="color: var(--f1-red); font-weight: 700; font-size: 1.1rem; margin-bottom: 25px;">
+        🏁 {{ corrida_destaque.circuito }} — {{ corrida_destaque.cidade }}, {{ corrida_destaque.pais }}
+    </p>
+
+    <!-- PÓDIO OFICIAL -->
+    <div class="podium-grid">
+        <div class="podium-step p2">
+            <div class="podium-pos" style="color: var(--f1-silver);">2º LUGAR</div>
+            <div class="podium-driver">{{ corrida_destaque.segundo_lugar or 'Segundo Colocado' }}</div>
+            <div class="podium-team">Segundo Colocado</div>
+        </div>
+
+        <div class="podium-step p1">
+            <div class="podium-pos" style="color: var(--f1-gold);">🏆 1º VENCEDOR</div>
+            {% if corrida_destaque.vencedor_foto %}
+            <div class="podium-winner-avatar">
+                <img src="{{ corrida_destaque.vencedor_foto }}" alt="{{ corrida_destaque.vencedor_nome }}" onerror="this.style.display='none';">
+            </div>
+            {% endif %}
+            <div class="podium-driver" style="font-size: 1.35rem; font-weight: 900;">
+                {{ corrida_destaque.vencedor_nome or 'Piloto Vencedor' }}
+            </div>
+            <div class="podium-team" style="color: #fff; font-weight: 700;">
+                {{ corrida_destaque.vencedor_equipe or '' }}
+            </div>
+        </div>
+
+        <div class="podium-step p3">
+            <div class="podium-pos" style="color: var(--f1-bronze);">3º LUGAR</div>
+            <div class="podium-driver">{{ corrida_destaque.terceiro_lugar or 'Terceiro Colocado' }}</div>
+            <div class="podium-team">Terceiro Colocado</div>
+        </div>
+    </div>
+
+    <!-- BOTÃO DE ACESSO ÀS INFORMAÇÕES COMPLETAS (SOLICITAÇÃO DO USUÁRIO) -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 25px; flex-wrap: wrap; gap: 15px;">
+        <div>
+            {% if corrida_destaque.volta_mais_rapida %}
+            <span style="color: var(--f1-green); font-size: 0.9rem; font-weight: 700;">
+                ⏱️ Volta Mais Rápida: {{ corrida_destaque.volta_mais_rapida }}
+            </span>
+            {% endif %}
+        </div>
+        <a href="{{ url_for('corrida_detalhe', id=corrida_destaque.id) }}" class="btn btn-primary" style="font-size: 0.9rem; padding: 12px 24px;">
+            🔍 Acessar Informações da Corrida & Classificação &rarr;
+        </a>
+    </div>
+</section>
+{% endif %}
+
+<!-- LISTA DE CORRIDAS HISTÓRICAS COM BOTÃO DE ACESSO -->
+<section style="margin-top: 45px; margin-bottom: 50px;">
+    <div class="section-header">
+        <div>
+            <h2 class="section-title">Acervo de Corridas Históricas Concluídas</h2>
+            <p style="color: var(--f1-text-muted); font-size: 0.9rem; margin-top: 4px;">
+                Acesse a classificação completa e o resumo de cada grande prêmio.
+            </p>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        {% for c in corridas_concluidas %}
+        <article class="card" style="padding: 24px; border-left: 4px solid var(--f1-gold);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span class="race-badge-status badge-finished" style="font-size: 0.7rem;">
+                    {{ c.ano }} • Etapa {{ c.rodada }}
+                </span>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="font-size: 1.3rem;">{{ c.pais_codigo|bandeira }}</span>
+                    <span style="font-size: 0.85rem; color: var(--f1-text-muted); font-weight: 600;">
+                        {{ c.pais }} &bull; {{ c.data_corrida.strftime('%d/%m/%Y') }}
+                    </span>
+                </div>
+            </div>
+
+            <h3 style="font-size: 1.3rem; color: #fff; margin-bottom: 6px;">{{ c.nome_gp }}</h3>
+            <p style="font-size: 0.85rem; color: var(--f1-red); font-weight: 700; margin-bottom: 16px;">
+                🏁 {{ c.circuito }}
+            </p>
+
+            <div style="background-color: rgba(0, 0, 0, 0.25); border-radius: 6px; padding: 12px; margin-bottom: 14px;">
+                <div style="font-size: 0.88rem; margin-bottom: 4px; color: #fff;">
+                    <strong style="color: var(--f1-gold);">1º</strong> {{ c.vencedor_nome or 'Vencedor' }} ({{ c.vencedor_equipe or '' }})
+                </div>
+                <div style="font-size: 0.85rem; margin-bottom: 4px; color: #ccc;">
+                    <strong style="color: var(--f1-silver);">2º</strong> {{ c.segundo_lugar }}
+                </div>
+                <div style="font-size: 0.85rem; color: #ccc;">
+                    <strong style="color: var(--f1-bronze);">3º</strong> {{ c.terceiro_lugar }}
+                </div>
+            </div>
+
+            <div style="margin-top: auto; padding-top: 12px; border-top: 1px solid var(--f1-card-border); display: flex; justify-content: flex-end;">
+                <a href="{{ url_for('corrida_detalhe', id=c.id) }}" class="btn btn-secondary" style="font-size: 0.8rem;">
+                    🔍 Acessar Informações da Corrida &rarr;
+                </a>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- PRÓXIMAS CORRIDAS COM BANDEIRAS -->
+<section>
+    <div class="section-header">
+        <h2 class="section-title">Próximas Corridas no Calendário</h2>
+    </div>
+
+    <div class="grid-3">
+        {% for corrida in proximas_corridas %}
+        <article class="upcoming-race-card">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <span class="race-badge-status badge-upcoming">Etapa {{ corrida.rodada }}</span>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="font-size: 1.3rem;">{{ corrida.pais_codigo|bandeira }}</span>
+                        <span class="race-date-pill">
+                            {{ corrida.data_corrida.strftime('%d/%m/%Y') }}
+                        </span>
+                    </div>
+                </div>
+
+                <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin-bottom: 6px;">
+                    {{ corrida.nome_gp }}
+                </h3>
+                <p style="font-size: 0.88rem; color: var(--f1-red); font-weight: 600; margin-bottom: 14px;">
+                    🏁 {{ corrida.circuito }}
+                </p>
+                <p style="font-size: 0.82rem; color: var(--f1-text-muted); margin-bottom: 16px;">
+                    📍 {{ corrida.cidade }}, {{ corrida.pais }}
+                </p>
+            </div>
+            <div style="border-top: 1px solid var(--f1-card-border); padding-top: 14px; margin-top: auto;">
+                <a href="{{ url_for('corrida_detalhe', id=corrida.id) }}" class="btn btn-secondary" style="width: 100%; justify-content: center; font-size: 0.8rem;">
+                    Acessar Informações da Corrida
+                </a>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

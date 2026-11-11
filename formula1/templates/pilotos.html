@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Pilotos & Lendas da Fórmula 1 • Setor F1{% endblock %}
+
+{% block content %}
+<div class="section-header">
+    <div>
+        <h1 class="section-title">Pilotos do Grid & Acervo Histórico</h1>
+        <p style="color: var(--f1-text-muted); font-size: 0.95rem; margin-top: 5px;">
+            Pesquise pilotos da temporada atual ou ícones do passado (como da época de 2020 e lendas eternas). Conheça como entraram na F1 e suas trajetórias.
+        </p>
+    </div>
+    <span class="btn btn-secondary" style="font-size: 0.8rem; pointer-events: none;">
+        {{ pilotos|length }} Pilotos Encontrados
+    </span>
+</div>
+
+<!-- BARRA DE BUSCA E FILTROS INTERATIVOS -->
+<div class="search-filter-card">
+    <form action="{{ url_for('pilotos') }}" method="GET" style="display: flex; gap: 15px; flex-wrap: wrap; width: 100%;">
+        <div style="flex: 2; min-width: 250px;">
+            <input type="text" name="busca" class="form-control" placeholder="🔍 Pesquise por nome, nacionalidade ou equipe..." value="{{ termo_busca }}">
+        </div>
+
+        <div style="flex: 1; min-width: 180px;">
+            <select name="status" class="form-control">
+                <option value="todos" {% if filtro_status == 'todos' %}selected{% endif %}>Todos os Pilotos (Atuais & Históricos)</option>
+                <option value="atual" {% if filtro_status == 'atual' %}selected{% endif %}>Apenas Grid Atual</option>
+                <option value="historico" {% if filtro_status == 'historico' %}selected{% endif %}>Apenas Históricos / Lendas</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="padding: 10px 20px;">
+            Filtrar
+        </button>
+
+        {% if termo_busca or filtro_status != 'todos' %}
+        <a href="{{ url_for('pilotos') }}" class="btn btn-secondary" style="padding: 10px 16px;">
+            Limpar Busca
+        </a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- AVISO DIDÁTICO SOBRE A PASTA DE IMAGENS -->
+<div style="background-color: rgba(225, 6, 0, 0.08); border: 1px dashed rgba(225, 6, 0, 0.4); border-radius: 8px; padding: 12px 18px; margin-bottom: 25px; font-size: 0.85rem; color: #d0d0d0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+    <span>📸 <strong>Dica de Personalização:</strong> Você pode adicionar suas próprias fotos de pilotos diretamente na pasta <code>static/images/pilotos/</code></span>
+    <span style="color: var(--f1-gold); font-weight: 700;">Setor F1 Imagens Ativo</span>
+</div>
+
+<!-- GRID DE CARDS DOS PILOTOS -->
+<div class="grid-2">
+    {% for piloto in pilotos %}
+    <article class="driver-card" style="border-top: 4px solid {{ piloto.cor_primaria or '#e10600' }};">
+        <!-- CABEÇALHO DO PILOTO -->
+        <div class="driver-header">
+            <div class="driver-avatar-container" style="border-color: {{ piloto.cor_primaria or '#2a2a3e' }};">
+                <img src="{{ piloto.foto_url }}" alt="{{ piloto.nome }}" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png';">
+                {% if piloto.numero %}
+                <div class="driver-number" style="background-color: {{ piloto.cor_primaria or '#e10600' }};">
+                    {{ piloto.numero }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="driver-info">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <h3>{{ piloto.nome }}</h3>
+                    <span>{{ piloto.pais_codigo|bandeira }}</span>
+                </div>
+
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 4px;">
+                    <span class="team-badge" style="background-color: {{ piloto.cor_primaria or '#383854' }}; color: #fff;">
+                        {{ piloto.equipe_nome or 'Histórico / Independente' }}
+                    </span>
+                    
+                    {% if piloto.ativo %}
+                    <span style="font-size: 0.72rem; background: #27ae60; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: 700;">
+                        GRID ATUAL
+                    </span>
+                    {% else %}
+                    <span style="font-size: 0.72rem; background: #555; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: 700;">
+                        HISTÓRICO ({{ piloto.temporadas_ativas or 'Época' }})
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- BARRA DE ESTATÍSTICAS -->
+        <div class="driver-stats-bar">
+            <div class="stat-item">
+                <div class="stat-num" style="color: var(--f1-gold);">{{ piloto.titulos_mundiais }}</div>
+                <div class="stat-label">Títulos Mundiais</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">{{ piloto.vitorias }}</div>
+                <div class="stat-label">Vitórias</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">{{ piloto.podios }}</div>
+                <div class="stat-label">Pódios</div>
+            </div>
+        </div>
+
+        <!-- DETALHES EXIGIDOS: COMO ENTROU NA F1 E TRAJETÓRIA -->
+        <div class="driver-details-section">
+            <div class="driver-topic" style="border-left-color: {{ piloto.cor_primaria or '#e10600' }};">
+                <h4> Como Entrou para a Fórmula 1</h4>
+                <p>{{ piloto.como_entrou_f1 }}</p>
+            </div>
+
+            <div class="driver-topic" style="border-left-color: var(--f1-red);">
+                <h4> Trajetória na Fórmula 1</h4>
+                <p>{{ piloto.trajetoria_f1 }}</p>
+            </div>
+            
+            <div style="margin-top: auto; padding-top: 10px; display: flex; justify-content: flex-end;">
+                <a href="{{ url_for('piloto_detalhe', id=piloto.id) }}" class="btn btn-secondary" style="font-size: 0.78rem;">
+                    Ver Perfil Completo &rarr;
+                </a>
+            </div>
+        </div>
+    </article>
+    {% else %}
+    <div style="grid-column: 1 / -1; padding: 40px; text-align: center; background: var(--f1-card-bg); border-radius: 8px;">
+        <p style="color: var(--f1-text-muted); font-size: 1.1rem; margin-bottom: 12px;">
+            Nenhum piloto encontrado para a busca "{{ termo_busca }}".
+        </p>
+        <a href="{{ url_for('pilotos') }}" class="btn btn-primary">Ver Todos os Pilotos</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

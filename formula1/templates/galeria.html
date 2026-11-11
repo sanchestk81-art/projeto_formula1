@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Galeria de Fotos • Imagens do Paddock • Setor F1{% endblock %}
+
+{% block content %}
+<div class="section-header">
+    <div>
+        <h1 class="section-title">📸 Galeria de Fotos & Bastidores</h1>
+        <p style="color: var(--f1-text-muted); font-size: 0.95rem; margin-top: 5px;">
+            Momentos marcantes, ultrapassagens na chuva, celebrações no pódio e a velocidade pura dos monopostos em alta definição.
+        </p>
+    </div>
+
+    {% if session.get('usuario_id') and session.get('usuario_tipo') == 'admin' %}
+    <a href="{{ url_for('admin_dashboard') }}#aba-galeria" class="btn btn-secondary" style="font-size: 0.82rem; background: #2980b9;">
+        ⚙️ Adicionar Novas Fotos no Admin
+    </a>
+    {% endif %}
+</div>
+
+<!-- FILTRO POR CATEGORIAS DA GALERIA -->
+<div class="filter-bar-container">
+    <span class="filter-label">Filtrar por:</span>
+    <div class="filter-chips">
+        <a href="{{ url_for('galeria', cat='todos') }}" class="filter-chip {% if categoria_atual == 'todos' %}active{% endif %}">
+            Todas as Fotos
+        </a>
+        {% for cat in categorias %}
+        <a href="{{ url_for('galeria', cat=cat) }}" class="filter-chip {% if categoria_atual == cat %}active{% endif %}">
+            {{ cat }}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- GRADE DE FOTOS EM ALTA DEFINIÇÃO -->
+<div class="gallery-grid">
+    {% for foto in fotos %}
+    <article class="gallery-card">
+        <div class="gallery-img-box">
+            <img src="{{ foto.imagem_url }}" alt="{{ foto.titulo }}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80';">
+            <span class="gallery-category-pill">{{ foto.categoria }}</span>
+        </div>
+        <div class="gallery-card-info">
+            <h3 class="gallery-card-title">{{ foto.titulo }}</h3>
+            {% if foto.descricao %}
+            <p class="gallery-card-desc">{{ foto.descricao }}</p>
+            {% endif %}
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 0.75rem; color: var(--f1-text-muted);">
+                <span>Acervo Setor F1</span>
+                <span>{{ foto.data_upload.strftime('%d/%m/%Y') if foto.data_upload else '2026' }}</span>
+            </div>
+        </div>
+    </article>
+    {% else %}
+    <div style="grid-column: 1 / -1; padding: 50px 20px; text-align: center; color: var(--f1-text-muted);">
+        <p style="font-size: 1.1rem; margin-bottom: 10px;">Nenhuma imagem encontrada nesta categoria.</p>
+        <a href="{{ url_for('galeria') }}" class="btn btn-secondary" style="font-size: 0.85rem;">
+            Ver Todas as Fotos
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

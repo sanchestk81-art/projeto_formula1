@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Produto • Loja Setor F1{% endblock %}
+
+{% block content %}
+<div style="max-width: 860px; margin: 0 auto;">
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary" style="margin-bottom: 25px;">
+        &larr; Voltar ao Painel Admin
+    </a>
+
+    <div class="card" style="padding: 35px; border-top: 5px solid var(--f1-gold);">
+        <h1 style="color: #fff; font-size: 1.6rem; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+            ✏️ Editar Produto da Loja: {{ produto.nome }}
+        </h1>
+
+        <form action="{{ url_for('admin_editar_produto', id=produto.id) }}" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label class="form-label">Nome do Produto *</label>
+                <input type="text" name="nome" class="form-control" value="{{ produto.nome }}" required>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px;">
+                <div class="form-group">
+                    <label class="form-label">Categoria *</label>
+                    <select name="categoria" class="form-control" required>
+                        <option value="Bonés" {% if produto.categoria == 'Bonés' %}selected{% endif %}>Bonés</option>
+                        <option value="Camisetas" {% if produto.categoria == 'Camisetas' %}selected{% endif %}>Camisetas</option>
+                        <option value="Miniaturas" {% if produto.categoria == 'Miniaturas' %}selected{% endif %}>Miniaturas</option>
+                        <option value="Jaquetas" {% if produto.categoria == 'Jaquetas' %}selected{% endif %}>Jaquetas</option>
+                        <option value="Acessórios" {% if produto.categoria == 'Acessórios' %}selected{% endif %}>Acessórios</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tag Especial do Produto *</label>
+                    <select name="tag" class="form-control" required>
+                        <option value="Mais Vendido" {% if produto.tag == 'Mais Vendido' %}selected{% endif %}>🔥 Mais Vendido</option>
+                        <option value="Edição Limitada" {% if produto.tag == 'Edição Limitada' %}selected{% endif %}>⭐ Edição Limitada</option>
+                        <option value="Nova Coleção" {% if produto.tag == 'Nova Coleção' %}selected{% endif %}>✨ Nova Coleção</option>
+                        <option value="Exclusivo" {% if produto.tag == 'Exclusivo' %}selected{% endif %}>💎 Exclusivo</option>
+                        <option value="Disponível" {% if produto.tag == 'Disponível' %}selected{% endif %}>✓ Disponível Normal</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Equipe Relacionada</label>
+                    <select name="equipe_id" class="form-control">
+                        <option value="">Nenhuma / Geral</option>
+                        {% for eq in equipes %}
+                        <option value="{{ eq.id }}" {% if produto.equipe_id == eq.id %}selected{% endif %}>{{ eq.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;">
+                <div class="form-group">
+                    <label class="form-label">Preço (R$) *</label>
+                    <input type="number" step="0.01" name="preco" class="form-control" value="{{ produto.preco }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Estoque Disponível *</label>
+                    <input type="number" name="estoque" class="form-control" value="{{ produto.estoque }}" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Descrição do Produto</label>
+                <textarea name="descricao" class="form-control" rows="3">{{ produto.descricao or '' }}</textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 18px; align-items: center;">
+                <div class="form-group">
+                    <label class="form-label">URL da Imagem Atual</label>
+                    <input type="text" name="imagem_url" class="form-control" value="{{ produto.imagem_url }}">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ou Trocar por Foto Local</label>
+                    <input type="file" name="foto_arquivo" class="form-control" accept="image/*">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 25px; margin-bottom: 25px; margin-top: 10px;">
+                <label style="color: #fff; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" name="destaque" value="true" {% if produto.destaque %}checked{% endif %} style="width: 18px; height: 18px;">
+                    Destaque na Loja
+                </label>
+
+                <label style="color: #fff; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" name="no_banner" value="true" {% if produto.no_banner %}checked{% endif %} style="width: 18px; height: 18px;">
+                    Exibir no Banner Rotativo da Home
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="padding: 12px 25px;">
+                💾 Atualizar Produto
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

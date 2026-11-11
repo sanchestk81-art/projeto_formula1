@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastro de Fã • Setor F1{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 40px auto;">
+    <div class="card" style="padding: 35px; border-top: 5px solid var(--f1-red);">
+        <div style="text-align: center; margin-bottom: 25px;">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Setor F1" style="height: 60px; margin: 0 auto 12px auto;">
+            <h1 style="font-size: 1.6rem; color: #fff;">Criar Conta de Fã</h1>
+            <p style="color: var(--f1-text-muted); font-size: 0.9rem;">
+                Cadastre-se para comprar itens oficiais na loja do Setor F1 e acompanhar seus pedidos.
+            </p>
+        </div>
+
+        <form action="{{ url_for('cadastro', next=request.args.get('next')) }}" method="POST">
+            <div class="form-group">
+                <label for="nome" class="form-label">Seu Nome Completo *</label>
+                <input type="text" id="nome" name="nome" class="form-control" placeholder="Ex: Lucas Arruda" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="form-label">Seu E-mail *</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="lucas@email.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="senha" class="form-label">Crie uma Senha Segura *</label>
+                <input type="password" id="senha" name="senha" class="form-control" placeholder="No mínimo 6 caracteres" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px; margin-top: 10px;">
+                Finalizar Cadastro & Acessar &rarr;
+            </button>
+        </form>
+
+        <div style="margin-top: 25px; border-top: 1px solid var(--f1-card-border); padding-top: 18px; text-align: center;">
+            <p style="color: var(--f1-text-muted); font-size: 0.88rem;">
+                Já possui uma conta?
+                <a href="{{ url_for('login') }}" style="color: var(--f1-red); font-weight: 700; text-decoration: underline;">
+                    Fazer Login
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,960 @@
+{% extends "base.html" %}
+
+{% block title %}Painel de Controle • Setor F1{% endblock %}
+
+{% block content %}
+<div class="section-header">
+    <div>
+        <h1 class="section-title">⚙️ Painel de Controle Administrativo</h1>
+        <p style="color: var(--f1-text-muted); font-size: 0.95rem; margin-top: 5px;">
+            Gestão integrada do <strong>Setor F1</strong>: Notícias, Corridas com Pódios & Pole, Pilotos (Titulares e Reservas), Equipes & Carros, Loja Oficial, Banners e Galeria.
+        </p>
+    </div>
+    <span class="btn btn-primary" style="font-size: 0.8rem; pointer-events: none;">
+        Perfil: Administrador Master
+    </span>
+</div>
+
+<!-- MÉTRICAS RÁPIDAS DO SISTEMA -->
+<div class="admin-stats-grid">
+    <div class="admin-stat-card">
+        <span class="stat-number">{{ total_noticias }}</span>
+        <span class="stat-title">Notícias</span>
+    </div>
+    <div class="admin-stat-card">
+        <span class="stat-number">{{ total_corridas }}</span>
+        <span class="stat-title">Corridas</span>
+    </div>
+    <div class="admin-stat-card">
+        <span class="stat-number">{{ total_pilotos }}</span>
+        <span class="stat-title">Pilotos</span>
+    </div>
+    <div class="admin-stat-card">
+        <span class="stat-number">{{ total_equipes }}</span>
+        <span class="stat-title">Equipes</span>
+    </div>
+    <div class="admin-stat-card">
+        <span class="stat-number">{{ total_produtos }}</span>
+        <span class="stat-title">Produtos Loja</span>
+    </div>
+    <div class="admin-stat-card">
+        <span class="stat-number">{{ total_galeria }}</span>
+        <span class="stat-title">Fotos Galeria</span>
+    </div>
+</div>
+
+<!-- BOTÕES DE SELEÇÃO DE ABAS INTERATIVAS -->
+<div class="admin-tab-buttons" style="margin-top: 30px; margin-bottom: 25px; flex-wrap: wrap;">
+    <button type="button" class="btn btn-primary admin-tab-btn active" onclick="mostrarAba('aba-noticias', this)">
+        📰 Notícias
+    </button>
+    <button type="button" class="btn btn-secondary admin-tab-btn" onclick="mostrarAba('aba-corridas', this)">
+        🏁 Corridas & Pódios
+    </button>
+    <button type="button" class="btn btn-secondary admin-tab-btn" onclick="mostrarAba('aba-pilotos', this)">
+        🏎️ Pilotos & Reservas
+    </button>
+    <button type="button" class="btn btn-secondary admin-tab-btn" onclick="mostrarAba('aba-equipes', this)">
+        🏢 Equipes & Carros
+    </button>
+    <button type="button" class="btn btn-secondary admin-tab-btn" onclick="mostrarAba('aba-loja', this)">
+        🛍️ Loja & Produtos
+    </button>
+    <button type="button" class="btn btn-secondary admin-tab-btn" onclick="mostrarAba('aba-banners', this)">
+        🖼️ Banners Carrossel
+    </button>
+    <button type="button" class="btn btn-secondary admin-tab-btn" onclick="mostrarAba('aba-galeria', this)">
+        📸 Galeria de Fotos
+    </button>
+</div>
+
+<!-- ======================================================================= -->
+<!-- ABA 1: NOTÍCIAS                                                         -->
+<!-- ======================================================================= -->
+<div id="aba-noticias" class="admin-tab-content">
+    <div class="card" style="padding: 30px; margin-bottom: 35px;">
+        <h2 style="color: #fff; font-size: 1.35rem; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+            📝 Publicar Nova Notícia
+        </h2>
+
+        <form action="{{ url_for('admin_criar_noticia') }}" method="POST">
+            <div class="form-group">
+                <label class="form-label">Título da Notícia *</label>
+                <input type="text" name="titulo" class="form-control" placeholder="Ex: Inovações aerodinâmicas para a próxima corrida" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Subtítulo / Linha Fina</label>
+                <input type="text" name="subtitulo" class="form-control" placeholder="Ex: Engenheiros testam novas asas flexíveis no túnel de vento">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="form-group">
+                    <label class="form-label">Categoria *</label>
+                    <select name="categoria" class="form-control" required>
+                        <option value="Campeonato">Campeonato</option>
+                        <option value="Mercado & Brasil">Mercado & Brasil</option>
+                        <option value="Análise Técnica">Análise Técnica</option>
+                        <option value="Bastidores">Bastidores</option>
+                        <option value="Geral">Geral</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">URL da Imagem de Capa</label>
+                    <input type="text" name="imagem_url" class="form-control" placeholder="https://exemplo.com/foto.jpg ou deixe em branco">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Conteúdo Completo *</label>
+                <textarea name="conteudo" class="form-control" rows="5" placeholder="Redija a matéria jornalística..." required></textarea>
+            </div>
+
+            <div style="display: flex; gap: 25px; margin-bottom: 20px; flex-wrap: wrap;">
+                <label style="color: #fff; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" name="destaque" value="true" style="width: 18px; height: 18px;">
+                    Destaque Principal na Home
+                </label>
+
+                <label style="color: #fff; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" name="no_banner" value="true" style="width: 18px; height: 18px;">
+                    Exibir no Banner Rotativo da Home
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="padding: 10px 22px;">
+                🚀 Publicar Notícia
+            </button>
+        </form>
+    </div>
+
+    <div class="section-header">
+        <h3 class="section-title" style="font-size: 1.25rem;">Notícias Cadastradas ({{ noticias|length }})</h3>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+        {% for n in noticias %}
+        <div class="card" style="padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div style="flex: 2; min-width: 260px;">
+                <span class="card-tag">{{ n.categoria }} &bull; {{ n.data_publicacao.strftime('%d/%m/%Y') }}</span>
+                <h4 style="color: #fff; font-size: 1.05rem;">{{ n.titulo }}</h4>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <a href="{{ url_for('noticia_detalhe', id=n.id) }}" target="_blank" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.75rem;">
+                    👁️ Ver
+                </a>
+                <a href="{{ url_for('admin_editar_noticia', id=n.id) }}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.75rem; background: #2980b9;">
+                    ✏️ Editar
+                </a>
+                <form action="{{ url_for('admin_excluir_noticia', id=n.id) }}" method="POST" onsubmit="return confirm('Deseja realmente remover esta notícia?');">
+                    <button type="submit" class="btn btn-danger" style="padding: 6px 12px; font-size: 0.75rem; background: #c0392b; color: #fff; border: none; border-radius: 4px; cursor: pointer;">
+                        🗑️ Excluir
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ======================================================================= -->
+<!-- ABA 2: CORRIDAS (COM POLE, PÓDIO COMPLETO E CLASSIFICAÇÃO)             -->
+<!-- ======================================================================= -->
+<div id="aba-corridas" class="admin-tab-content" style="display: none;">
+    <div class="card" style="padding: 30px; margin-bottom: 35px;">
+        <h2 style="color: #fff; font-size: 1.35rem; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+            🏁 Cadastrar Corrida & Publicar Resultados
+        </h2>
+
+        <form action="{{ url_for('admin_criar_corrida') }}" method="POST">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label">Ano / Temporada *</label>
+                    <input type="number" name="ano" class="form-control" value="2026" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Rodada (Etapa) *</label>
+                    <input type="number" name="rodada" class="form-control" value="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Status da Corrida *</label>
+                    <select name="status" class="form-control" onchange="toggleCamposResultado(this.value)">
+                        <option value="proxima">Próxima Corrida (Futura)</option>
+                        <option value="concluida">Corrida Concluída (Pódio Oficial)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label">Nome do Grande Prêmio *</label>
+                    <input type="text" name="nome_gp" class="form-control" placeholder="Ex: Grande Prêmio de Mônaco" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Data da Corrida *</label>
+                    <input type="date" name="data_corrida" class="form-control" required>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label">Circuito *</label>
+                    <input type="text" name="circuito" class="form-control" placeholder="Ex: Circuito de Monte Carlo" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">País *</label>
+                    <input type="text" name="pais" class="form-control" placeholder="Ex: Mônaco" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Código do País (Bandeira) *</label>
+                    <input type="text" name="pais_codigo" class="form-control" placeholder="Ex: mc, br, at, us" value="mc" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Cidade</label>
+                    <input type="text" name="cidade" class="form-control" placeholder="Ex: Monte Carlo">
+                </div>
+            </div>
+
+            <!-- RESULTADOS TÉCNICOS: POLE, PÓDIO 1/2/3 E VOLTA RÁPIDA -->
+            <div id="secaoResultados" style="display: none; background: rgba(255,255,255,0.03); border: 1px solid var(--f1-card-border); border-radius: 8px; padding: 20px; margin-top: 15px; margin-bottom: 20px;">
+                <h4 style="color: var(--f1-gold); margin-bottom: 15px; font-size: 1.05rem;">
+                    🏆 Registro do Pódio Oficial, Pole Position e Volta Rápida
+                </h4>
+                
+                <!-- POLE POSITION -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 14px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">⚡ Pole Position (Piloto Cadastrado)</label>
+                        <select name="pole_position_piloto_id" class="form-control">
+                            <option value="">Selecione o piloto da pole...</option>
+                            {% for p in pilotos %}
+                            <option value="{{ p.id }}">{{ p.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Tempo da Pole (Ex: 1:10.270)</label>
+                        <input type="text" name="pole_position_tempo" class="form-control" placeholder="Ex: 1:10.270">
+                    </div>
+                </div>
+
+                <!-- 1º LUGAR VENCEDOR -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 14px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="color: var(--f1-gold);">🥇 Piloto Vencedor (1º Lugar)</label>
+                        <select name="vencedor_piloto_id" class="form-control">
+                            <option value="">Selecione o vencedor...</option>
+                            {% for p in pilotos %}
+                            <option value="{{ p.id }}">{{ p.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Equipe Vencedora</label>
+                        <input type="text" name="vencedor_equipe" class="form-control" placeholder="Ex: Ferrari, Red Bull, McLaren">
+                    </div>
+                </div>
+
+                <!-- 2º E 3º LUGAR -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px;">
+                    <div>
+                        <div class="form-group">
+                            <label class="form-label" style="color: var(--f1-silver);">🥈 2º Colocado (Piloto)</label>
+                            <select name="segundo_piloto_id" class="form-control">
+                                <option value="">Selecione o 2º lugar...</option>
+                                {% for p in pilotos %}
+                                <option value="{{ p.id }}">{{ p.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Texto / Equipe do 2º Colocado</label>
+                            <input type="text" name="segundo_lugar" class="form-control" placeholder="Ex: Charles Leclerc (Ferrari)">
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="form-group">
+                            <label class="form-label" style="color: var(--f1-bronze);">🥉 3º Colocado (Piloto)</label>
+                            <select name="terceiro_piloto_id" class="form-control">
+                                <option value="">Selecione o 3º lugar...</option>
+                                {% for p in pilotos %}
+                                <option value="{{ p.id }}">{{ p.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Texto / Equipe do 3º Colocado</label>
+                            <input type="text" name="terceiro_lugar" class="form-control" placeholder="Ex: Lando Norris (McLaren)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VOLTA MAIS RÁPIDA -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 14px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="color: var(--f1-green);">🟣 Piloto da Volta Mais Rápida</label>
+                        <select name="volta_rapida_piloto_id" class="form-control">
+                            <option value="">Selecione quem fez a melhor volta...</option>
+                            {% for p in pilotos %}
+                            <option value="{{ p.id }}">{{ p.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Tempo da Melhor Volta</label>
+                        <input type="text" name="volta_mais_rapida" class="form-control" placeholder="Ex: 1:14.200">
+                    </div>
+                </div>
+
+                <!-- CLASSIFICAÇÃO DETALHADA -->
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Classificação Detalhada da Prova (Linha a linha)</label>
+                    <textarea name="classificacao_detalhada" class="form-control" rows="5" placeholder="1. Max Verstappen (Red Bull) - 71 voltas&#10;2. Lando Norris (McLaren) +19.345s&#10;3. Charles Leclerc (Ferrari) +25.102s"></textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Resumo dos Acontecimentos da Prova</label>
+                <textarea name="noticias_resumo" class="form-control" rows="3" placeholder="Resumo jornalístico da corrida..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="padding: 10px 22px;">
+                💾 Salvar Corrida
+            </button>
+        </form>
+    </div>
+
+    <!-- LISTA DE CORRIDAS COM BOTÕES EDITAR, EXCLUIR E ACESSAR DETALHES -->
+    <div class="section-header">
+        <h3 class="section-title" style="font-size: 1.25rem;">Corridas no Acervo ({{ corridas|length }})</h3>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+        {% for c in corridas %}
+        <div class="card" style="padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div style="flex: 2; min-width: 250px;">
+                <span class="card-tag">{{ c.ano }} &bull; Etapa {{ c.rodada }} &bull; {{ c.status|upper }}</span>
+                <h4 style="color: #fff; font-size: 1.05rem;">{{ c.pais_codigo|bandeira }} {{ c.nome_gp }} ({{ c.circuito }})</h4>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <a href="{{ url_for('corrida_detalhe', id=c.id) }}" target="_blank" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.75rem;">
+                    🔍 Detalhes
+                </a>
+                <a href="{{ url_for('admin_editar_corrida', id=c.id) }}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.75rem; background: #2980b9;">
+                    ✏️ Editar
+                </a>
+                <form action="{{ url_for('admin_excluir_corrida', id=c.id) }}" method="POST" onsubmit="return confirm('Deseja excluir esta corrida?');">
+                    <button type="submit" class="btn btn-danger" style="padding: 6px 12px; font-size: 0.75rem; background: #c0392b; color: #fff; border: none; border-radius: 4px; cursor: pointer;">
+                        🗑️ Excluir
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ======================================================================= -->
+<!-- ABA 3: PILOTOS & RESERVAS (CADASTRAR, EDITAR, UPLOAD E EXCLUIR)         -->
+<!-- ======================================================================= -->
+<div id="aba-pilotos" class="admin-tab-content" style="display: none;">
+    <div class="card" style="padding: 30px; margin-bottom: 35px;">
+        <h2 style="color: #fff; font-size: 1.35rem; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+            🏎️ Cadastrar Novo Piloto (Titular ou Reserva)
+        </h2>
+
+        <form action="{{ url_for('admin_criar_piloto') }}" method="POST" enctype="multipart/form-data">
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label">Nome Completo do Piloto *</label>
+                    <input type="text" name="nome" class="form-control" placeholder="Ex: Gabriel Bortoleto" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Número do Carro</label>
+                    <input type="number" name="numero" class="form-control" placeholder="Ex: 5">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label">Nacionalidade *</label>
+                    <input type="text" name="nacionalidade" class="form-control" placeholder="Ex: Brasil" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Código do País (Bandeira) *</label>
+                    <input type="text" name="pais_codigo" class="form-control" placeholder="Ex: br, nl, mc, gb" value="br" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Equipe</label>
+                    <select name="equipe_id" class="form-control">
+                        <option value="">Sem Equipe / Agente Livre</option>
+                        {% for eq in equipes %}
+                        <option value="{{ eq.id }}">{{ eq.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Papel na Equipe *</label>
+                    <select name="papel_equipe" class="form-control">
+                        <option value="titular">🏎️ Piloto Titular (Grid Oficial)</option>
+                        <option value="reserva">🛡️ Piloto Reserva / Testes</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label">Pontos na Temporada</label>
+                    <input type="number" name="pontos_temporada" class="form-control" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Chance de Título (%)</label>
+                    <input type="number" step="0.1" name="chance_titulo" class="form-control" value="0.0">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Títulos Mundiais</label>
+                    <input type="number" name="titulos_mundiais" class="form-control" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Vitórias</label>
+                    <input type="number" name="vitorias" class="form-control" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Pódios</label>
+                    <input type="number" name="podios" class="form-control" value="0">
+                </div>
+            </div>
+
+            <!-- FOTO DO PILOTO -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">📸 Upload de Foto (Arquivo Local)</label>
+                    <input type="file" name="foto_arquivo" class="form-control" accept="image/*">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Ou URL da Foto</label>
+                    <input type="text" name="foto_url" class="form-control" placeholder="https://exemplo.com/piloto.jpg">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Como Entrou na Fórmula 1 *</label>
+                <textarea name="como_entrou_f1" class="form-control" rows="2" placeholder="Descreva os primeiros passos, academias de pilotos e estreia..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Trajetória e Principais Conquistas *</label>
+                <textarea name="trajetoria_f1" class="form-control" rows="3" placeholder="Histórico na categoria máxima, grandes corridas e evolução..." required></textarea>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="color: #fff; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" name="ativo" value="true" checked style="width: 18px; height: 18px;">
+                    Piloto Ativo na Temporada 2026 (Aparece no Grid e no DataTable da Home)
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="padding: 10px 22px;">
+                🏎️ Cadastrar Piloto
+            </button>
+        </form>
+    </div>
+
+    <!-- LISTA DE PILOTOS COM EDITAR E EXCLUIR -->
+    <div class="section-header">
+        <h3 class="section-title" style="font-size: 1.25rem;">Pilotos Cadastrados no Setor F1 ({{ pilotos|length }})</h3>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+        {% for p in pilotos %}
+        <div class="card" style="padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <img src="{{ p.foto_url }}" alt="{{ p.nome }}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--f1-red);">
+                <div>
+                    <span class="card-tag">
+                        {{ p.pais_codigo|bandeira }} #{{ p.numero or 'S/N' }} &bull; {{ p.equipe_nome or 'Sem Equipe' }} &bull; 
+                        <strong>{{ 'Titular' if p.papel_equipe == 'titular' else 'Reserva' }}</strong>
+                    </span>
+                    <h4 style="color: #fff; font-size: 1.05rem;">{{ p.nome }}</h4>
+                    <span style="font-size: 0.8rem; color: var(--f1-gold);">
+                        Pontos: {{ p.pontos_temporada }} | Chance Título: {{ p.chance_titulo }}% | Vitórias: {{ p.vitorias }}
+                    </span>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <a href="{{ url_for('piloto_detalhe', id=p.id) }}" target="_blank" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.75rem;">
+                    👁️ Ver Perfil
+                </a>
+                <a href="{{ url_for('admin_editar_piloto', id=p.id) }}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.75rem; background: #2980b9;">
+                    ✏️ Editar
+                </a>
+                <form action="{{ url_for('admin_excluir_piloto', id=p.id) }}" method="POST" onsubmit="return confirm('Deseja realmente excluir este piloto?');">
+                    <button type="submit" class="btn btn-danger" style="padding: 6px 12px; font-size: 0.75rem; background: #c0392b; color: #fff; border: none; border-radius: 4px; cursor: pointer;">
+                        🗑️ Excluir
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ======================================================================= -->
+<!-- ABA 4: EQUIPES & CARROS (CADASTRAR E EDITAR)                            -->
+<!-- ======================================================================= -->
+<div id="aba-equipes" class="admin-tab-content" style="display: none;">
+    <div class="card" style="padding: 30px; margin-bottom: 35px;">
+        <h2 style="color: #fff; font-size: 1.35rem; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+            🏢 Cadastrar Nova Equipe & Monoposto
+        </h2>
+
+        <form action="{{ url_for('admin_criar_equipe') }}" method="POST">
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label">Nome da Equipe *</label>
+                    <input type="text" name="nome" class="form-control" placeholder="Ex: McLaren" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Nome Completo Oficial *</label>
+                    <input type="text" name="nome_completo" class="form-control" placeholder="Ex: McLaren Formula 1 Team" required>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label">País de Origem</label>
+                    <input type="text" name="pais_origem" class="form-control" placeholder="Ex: Reino Unido">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Sede da Fábrica</label>
+                    <input type="text" name="sede" class="form-control" placeholder="Ex: Woking, Reino Unido">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Chefe de Equipe</label>
+                    <input type="text" name="chefe_equipe" class="form-control" placeholder="Ex: Andrea Stella">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Motor / Unidade</label>
+                    <input type="text" name="motor" class="form-control" placeholder="Ex: Mercedes">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label">Modelo do Monoposto</label>
+                    <input type="text" name="carro_modelo" class="form-control" placeholder="Ex: MCL38">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">URL da Imagem do Carro</label>
+                    <input type="text" name="carro_imagem_url" class="form-control" placeholder="https://exemplo.com/carro.png">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Cor Primária (Hex)</label>
+                    <input type="color" name="cor_primaria" class="form-control" value="#FF8000" style="height: 44px; padding: 4px;">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">URL do Logo</label>
+                    <input type="text" name="logo_url" class="form-control" placeholder="https://exemplo.com/logo.png">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label">Títulos de Construtores</label>
+                    <input type="number" name="titulos_construtores" class="form-control" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ano de Estreia</label>
+                    <input type="number" name="ano_estreia" class="form-control" placeholder="Ex: 1966">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">História da Escuderia *</label>
+                <textarea name="historia" class="form-control" rows="3" placeholder="Resuma a trajetória vitoriosa e a fundação da equipe..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="padding: 10px 22px;">
+                🏢 Cadastrar Equipe
+            </button>
+        </form>
+    </div>
+
+    <!-- LISTA DE EQUIPES COM BOTÃO EDITAR -->
+    <div class="section-header">
+        <h3 class="section-title" style="font-size: 1.25rem;">Equipes do Grid ({{ equipes|length }})</h3>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+        {% for eq in equipes %}
+        <div class="card" style="padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-left: 5px solid {{ eq.cor_primaria or '#e10600' }};">
+            <div>
+                <span class="card-tag">Sede: {{ eq.sede or eq.pais_origem }} &bull; Motor: {{ eq.motor }} &bull; Carro: {{ eq.carro_modelo or 'N/A' }}</span>
+                <h4 style="color: #fff; font-size: 1.1rem;">{{ eq.nome }} <span style="font-size: 0.85rem; color: var(--f1-text-muted);">({{ eq.nome_completo }})</span></h4>
+                <span style="font-size: 0.8rem; color: var(--f1-gold);">🏆 {{ eq.titulos_construtores }} Títulos Mundiais de Construtores</span>
+            </div>
+
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <a href="{{ url_for('admin_editar_equipe', id=eq.id) }}" class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.78rem; background: #2980b9;">
+                    ✏️ Editar Equipe & Pilotos
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ======================================================================= -->
+<!-- ABA 5: LOJA & PRODUTOS (TAGS, FOTOS, BANNERS ROTATIVOS)                 -->
+<!-- ======================================================================= -->
+<div id="aba-loja" class="admin-tab-content" style="display: none;">
+    <div class="card" style="padding: 30px; margin-bottom: 35px;">
+        <h2 style="color: #fff; font-size: 1.35rem; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+            🛍️ Cadastrar Novo Produto na Loja Oficial
+        </h2>
+
+        <form action="{{ url_for('admin_criar_produto') }}" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label class="form-label">Nome do Produto *</label>
+                <input type="text" name="nome" class="form-control" placeholder="Ex: Jaqueta Corta-Vento Ferrari HP 2026" required>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label">Categoria *</label>
+                    <select name="categoria" class="form-control" required>
+                        <option value="Bonés">Bonés</option>
+                        <option value="Camisetas">Camisetas</option>
+                        <option value="Miniaturas">Miniaturas</option>
+                        <option value="Jaquetas">Jaquetas</option>
+                        <option value="Acessórios">Acessórios</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tag Especial *</label>
+                    <select name="tag" class="form-control" required>
+                        <option value="Mais Vendido">🔥 Mais Vendido</option>
+                        <option value="Edição Limitada">⭐ Edição Limitada</option>
+                        <option value="Nova Coleção">✨ Nova Coleção</option>
+                        <option value="Exclusivo">💎 Exclusivo</option>
+                        <option value="Disponível">✓ Disponível</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Equipe Relacionada</label>
+                    <select name="equipe_id" class="form-control">
+                        <option value="">Geral / Sem Equipe</option>
+                        {% for eq in equipes %}
+                        <option value="{{ eq.id }}">{{ eq.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label">Preço (R$) *</label>
+                    <input type="number" step="0.01" name="preco" class="form-control" placeholder="Ex: 299.90" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Estoque Inicial *</label>
+                    <input type="number" name="estoque" class="form-control" value="25" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Descrição do Produto</label>
+                <textarea name="descricao" class="form-control" rows="3" placeholder="Informações do produto, tecidos e detalhes oficiais..."></textarea>
+            </div>
+
+            <!-- FOTO DO PRODUTO (UPLOAD OU URL) -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">📸 Enviar Foto do Computador (Upload)</label>
+                    <input type="file" name="foto_arquivo" class="form-control" accept="image/*">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Ou URL da Foto</label>
+                    <input type="text" name="imagem_url" class="form-control" placeholder="https://exemplo.com/foto_produto.jpg">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 25px; margin-bottom: 20px; flex-wrap: wrap;">
+                <label style="color: #fff; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" name="destaque" value="true" style="width: 18px; height: 18px;">
+                    Destaque na Vitrine da Loja
+                </label>
+
+                <label style="color: #fff; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" name="no_banner_home" value="true" style="width: 18px; height: 18px;">
+                    Exibir no Carrossel da Home
+                </label>
+
+                <label style="color: #fff; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" name="no_banner_loja" value="true" style="width: 18px; height: 18px;">
+                    Exibir no Carrossel da Loja Oficial
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="padding: 10px 22px;">
+                🛍️ Cadastrar Produto na Loja
+            </button>
+        </form>
+    </div>
+
+    <!-- LISTA DE PRODUTOS COM EDITAR E EXCLUIR -->
+    <div class="section-header">
+        <h3 class="section-title" style="font-size: 1.25rem;">Produtos Cadastrados na Loja ({{ produtos|length }})</h3>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+        {% for prod in produtos %}
+        <div class="card" style="padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <img src="{{ prod.imagem_url }}" alt="{{ prod.nome }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid var(--f1-card-border);">
+                <div>
+                    <span class="card-tag">{{ prod.categoria }} &bull; Tag: <strong>{{ prod.tag }}</strong></span>
+                    <h4 style="color: #fff; font-size: 1.05rem;">{{ prod.nome }}</h4>
+                    <span style="color: var(--f1-gold); font-weight: 800; font-size: 0.95rem;">
+                        R$ {{ "%.2f"|format(prod.preco)|replace('.', ',') }} (Estoque: {{ prod.estoque }})
+                    </span>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <a href="{{ url_for('admin_editar_produto', id=prod.id) }}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.75rem; background: #2980b9;">
+                    ✏️ Editar
+                </a>
+                <form action="{{ url_for('admin_excluir_produto', id=prod.id) }}" method="POST" onsubmit="return confirm('Deseja excluir este produto?');">
+                    <button type="submit" class="btn btn-danger" style="padding: 6px 12px; font-size: 0.75rem; background: #c0392b; color: #fff; border: none; border-radius: 4px; cursor: pointer;">
+                        🗑️ Excluir
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ======================================================================= -->
+<!-- ABA 6: BANNERS ROTATIVOS (HOME & LOJA)                                 -->
+<!-- ======================================================================= -->
+<div id="aba-banners" class="admin-tab-content" style="display: none;">
+    <div class="card" style="padding: 30px; margin-bottom: 35px;">
+        <h2 style="color: #fff; font-size: 1.35rem; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+            🖼️ Adicionar Slide no Carrossel (Home ou Loja)
+        </h2>
+
+        <form action="{{ url_for('admin_criar_banner') }}" method="POST">
+            <div class="form-group">
+                <label class="form-label">Título do Banner *</label>
+                <input type="text" name="titulo" class="form-control" placeholder="Ex: Grande Vitória de Verstappen em Interlagos" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Subtítulo / Descrição *</label>
+                <input type="text" name="subtitulo" class="form-control" placeholder="Ex: Confira a análise e os bastidores da corrida na chuva" required>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label">URL da Imagem de Fundo *</label>
+                    <input type="text" name="imagem_url" class="form-control" placeholder="https://exemplo.com/banner.jpg" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tag do Slide *</label>
+                    <input type="text" name="tag_destaque" class="form-control" value="DESTAQUE SETOR F1" required>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label">Local de Exibição *</label>
+                    <select name="local_exibicao" class="form-control" required>
+                        <option value="home">Página Inicial (Home)</option>
+                        <option value="loja">Loja Oficial (Fan Store)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Link de Destino</label>
+                    <input type="text" name="link_url" class="form-control" value="/loja" placeholder="/noticias, /loja, /corridas">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ordem de Exibição</label>
+                    <input type="number" name="ordem" class="form-control" value="1">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="padding: 10px 22px;">
+                ➕ Adicionar Slide ao Carrossel
+            </button>
+        </form>
+    </div>
+
+    <!-- LISTA DE BANNERS ATIVOS -->
+    <div class="section-header">
+        <h3 class="section-title" style="font-size: 1.25rem;">Slides Ativos nos Carrosséis ({{ banners|length }})</h3>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+        {% for b in banners %}
+        <div class="card" style="padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+                <span class="card-tag">Exibição: <strong>{{ b.local_exibicao|upper }}</strong> &bull; Tag: {{ b.tag_destaque }} &bull; Ordem: {{ b.ordem }}</span>
+                <h4 style="color: #fff; font-size: 1.05rem;">{{ b.titulo }}</h4>
+                <span style="font-size: 0.8rem; color: var(--f1-text-muted);">Link: {{ b.link_url }}</span>
+            </div>
+
+            <div>
+                <form action="{{ url_for('admin_excluir_banner', id=b.id) }}" method="POST" onsubmit="return confirm('Deseja remover este banner?');">
+                    <button type="submit" class="btn btn-danger" style="padding: 6px 12px; font-size: 0.75rem; background: #c0392b; color: #fff; border: none; border-radius: 4px; cursor: pointer;">
+                        🗑️ Remover Slide
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ======================================================================= -->
+<!-- ABA 7: GALERIA DE FOTOS (CADASTRAR COM UPLOAD E EXCLUIR)                -->
+<!-- ======================================================================= -->
+<div id="aba-galeria" class="admin-tab-content" style="display: none;">
+    <div class="card" style="padding: 30px; margin-bottom: 35px;">
+        <h2 style="color: #fff; font-size: 1.35rem; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+            📸 Publicar Foto na Galeria de Mídia
+        </h2>
+
+        <form action="{{ url_for('admin_criar_foto_galeria') }}" method="POST" enctype="multipart/form-data">
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label">Título da Fotografia *</label>
+                    <input type="text" name="titulo" class="form-control" placeholder="Ex: Disputa roda a roda na curva do Lago" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Categoria *</label>
+                    <select name="categoria" class="form-control" required>
+                        <option value="Paddock">Paddock</option>
+                        <option value="Carros">Carros & Pista</option>
+                        <option value="Pódio">Pódio & Troféus</option>
+                        <option value="Chuva">Chuva & Emoção</option>
+                        <option value="Bastidores">Bastidores</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Descrição / Legenda da Foto</label>
+                <input type="text" name="descricao" class="form-control" placeholder="Ex: Detalhe do safety car liderando o pelotão com pista molhada">
+            </div>
+
+            <!-- FOTO (UPLOAD OU URL) -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">📸 Enviar Foto do seu Computador (Upload)</label>
+                    <input type="file" name="foto_arquivo" class="form-control" accept="image/*">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Ou URL da Imagem na Web</label>
+                    <input type="text" name="imagem_url" class="form-control" placeholder="https://exemplo.com/foto_alta_definicao.jpg">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="padding: 10px 22px;">
+                📸 Adicionar Foto à Galeria
+            </button>
+        </form>
+    </div>
+
+    <!-- LISTA DE FOTOS COM EXCLUIR -->
+    <div class="section-header">
+        <h3 class="section-title" style="font-size: 1.25rem;">Fotos no Acervo da Galeria ({{ galeria|length }})</h3>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;">
+        {% for foto in galeria %}
+        <div class="card" style="padding: 12px; display: flex; flex-direction: column;">
+            <div style="height: 160px; overflow: hidden; border-radius: 6px; margin-bottom: 10px;">
+                <img src="{{ foto.imagem_url }}" alt="{{ foto.titulo }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=400&q=80';">
+            </div>
+            <span class="card-tag">{{ foto.categoria }}</span>
+            <h4 style="color: #fff; font-size: 0.95rem; margin-top: 4px; margin-bottom: 6px;">{{ foto.titulo }}</h4>
+            <div style="margin-top: auto; padding-top: 10px; border-top: 1px solid var(--f1-card-border); display: flex; justify-content: flex-end;">
+                <form action="{{ url_for('admin_excluir_foto_galeria', id=foto.id) }}" method="POST" onsubmit="return confirm('Deseja excluir esta foto da galeria?');">
+                    <button type="submit" class="btn btn-danger" style="padding: 4px 10px; font-size: 0.72rem; background: #c0392b; color: #fff; border: none; border-radius: 4px; cursor: pointer;">
+                        🗑️ Excluir Foto
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function mostrarAba(abaId, botao) {
+        document.querySelectorAll('.admin-tab-content').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+            btn.classList.remove('active', 'btn-primary');
+            btn.classList.add('btn-secondary');
+        });
+
+        const ativa = document.getElementById(abaId);
+        if (ativa) ativa.style.display = 'block';
+
+        if (botao) {
+            botao.classList.remove('btn-secondary');
+            botao.classList.add('active', 'btn-primary');
+        }
+    }
+
+    function toggleCamposResultado(status) {
+        const secao = document.getElementById('secaoResultados');
+        if (secao) {
+            secao.style.display = (status === 'concluida') ? 'block' : 'none';
+        }
+    }
+
+    // Suporte para abrir aba via hash na URL (ex: #aba-pilotos)
+    window.addEventListener('DOMContentLoaded', () => {
+        const hash = window.location.hash;
+        if (hash) {
+            const targetId = hash.replace('#', '');
+            const targetTab = document.getElementById(targetId);
+            if (targetTab) {
+                const btn = Array.from(document.querySelectorAll('.admin-tab-btn')).find(b => b.getAttribute('onclick')?.includes(targetId));
+                if (btn) mostrarAba(targetId, btn);
+            }
+        }
+    });
+</script>
+{% endblock %}

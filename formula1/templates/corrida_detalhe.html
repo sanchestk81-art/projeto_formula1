@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}{{ corrida.nome_gp }} • Detalhes da Corrida • Setor F1{% endblock %}
+
+{% block content %}
+<div class="race-detail-container" style="max-width: 1100px; margin: 0 auto;">
+    <!-- NAVEGAÇÃO SUPERIOR -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 10px;">
+        <a href="{{ url_for('corridas') }}" class="btn btn-secondary">
+            &larr; Voltar para Todas as Corridas
+        </a>
+
+        {% if session.get('usuario_id') and session.get('usuario_tipo') == 'admin' %}
+        <a href="{{ url_for('admin_editar_corrida', id=corrida.id) }}" class="btn btn-primary" style="background: #2980b9;">
+            ✏️ Editar Resultados desta Corrida
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- CABEÇALHO DO GRANDE PRÊMIO -->
+    <section class="card" style="padding: 35px 30px; margin-bottom: 30px; border-left: 6px solid var(--f1-red); background: linear-gradient(135deg, #161622 0%, #1e1e2d 100%);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <span class="race-badge-status {% if corrida.status == 'concluida' %}badge-finished{% else %}badge-upcoming{% endif %}">
+                        Temporada {{ corrida.ano }} • Etapa {{ corrida.rodada }}
+                    </span>
+                    <span style="font-size: 1.5rem;">{{ corrida.pais_codigo|bandeira }}</span>
+                    <span style="color: var(--f1-text-muted); font-size: 0.95rem; font-weight: 600;">
+                        {{ corrida.cidade }}, {{ corrida.pais }}
+                    </span>
+                </div>
+                <h1 style="color: #fff; font-size: 2.3rem; font-weight: 900; line-height: 1.1; margin-bottom: 8px;">
+                    {{ corrida.nome_gp }}
+                </h1>
+                <p style="color: var(--f1-red); font-size: 1.1rem; font-weight: 700; margin-bottom: 0;">
+                    🏁 {{ corrida.circuito }}
+                </p>
+            </div>
+
+            <div style="text-align: right; background: rgba(0,0,0,0.3); padding: 12px 20px; border-radius: 8px; border: 1px solid var(--f1-card-border);">
+                <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--f1-text-muted); display: block; font-weight: 700;">Data Oficial</span>
+                <span style="font-size: 1.25rem; font-weight: 800; color: #fff;">
+                    {{ corrida.data_corrida.strftime('%d de %B de %Y') if corrida.data_corrida else 'A definir' }}
+                </span>
+                <span style="display: block; font-size: 0.8rem; margin-top: 4px; color: {% if corrida.status == 'concluida' %}var(--f1-green){% else %}var(--f1-gold){% endif %}; font-weight: 700;">
+                    {{ 'Corrida Concluída' if corrida.status == 'concluida' else 'Próxima Etapa no Calendário' }}
+                </span>
+            </div>
+        </div>
+    </section>
+
+    {% if corrida.status == 'concluida' %}
+    <!-- DESTAQUES TÉCNICOS: POLE, VENCEDOR, PÓDIO E VOLTA RÁPIDA -->
+    <div class="section-header" style="margin-bottom: 18px;">
+        <h2 class="section-title">Resultados Principais & Pódio Oficial</h2>
+    </div>
+
+    <!-- CARDS DE DESTAQUE TÉCNICO -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 35px;">
+        
+        <!-- POLE POSITION -->
+        <div class="card" style="padding: 20px; border-top: 4px solid #9b59b6; text-align: center;">
+            <span style="font-size: 0.75rem; text-transform: uppercase; color: #bb86fc; font-weight: 800; letter-spacing: 0.8px; display: block; margin-bottom: 10px;">
+                ⚡ POLE POSITION (SÁBADO)
+            </span>
+            {% if corrida.pole_foto %}
+            <div style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px; border: 2px solid #9b59b6;">
+                <img src="{{ corrida.pole_foto }}" alt="{{ corrida.pole_nome }}" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            {% endif %}
+            <h4 style="color: #fff; font-size: 1.15rem; margin-bottom: 4px;">{{ corrida.pole_nome or 'Piloto Pole' }}</h4>
+            <span style="color: var(--f1-gold); font-size: 0.85rem; font-weight: 700; display: block;">
+                ⏱️ {{ corrida.pole_position_tempo or 'Tempo registrado na Classificação' }}
+            </span>
+        </div>
+
+        <!-- 1º LUGAR - VENCEDOR -->
+        <div class="card" style="padding: 20px; border-top: 4px solid var(--f1-gold); text-align: center; background: linear-gradient(180deg, rgba(255, 215, 0, 0.08) 0%, rgba(22, 22, 34, 1) 100%);">
+            <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--f1-gold); font-weight: 800; letter-spacing: 0.8px; display: block; margin-bottom: 10px;">
+                🏆 1º LUGAR • VENCEDOR
+            </span>
+            {% if corrida.vencedor_foto %}
+            <div style="width: 75px; height: 75px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px; border: 3px solid var(--f1-gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);">
+                <img src="{{ corrida.vencedor_foto }}" alt="{{ corrida.vencedor_nome }}" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            {% endif %}
+            <h4 style="color: #fff; font-size: 1.25rem; font-weight: 900; margin-bottom: 4px;">
+                {{ corrida.vencedor_nome or 'Piloto Campeão' }}
+            </h4>
+            <span style="color: var(--f1-text-muted); font-size: 0.88rem; font-weight: 600;">
+                {{ corrida.vencedor_equipe or 'Escuderia Vencedora' }}
+            </span>
+        </div>
+
+        <!-- 2º LUGAR -->
+        <div class="card" style="padding: 20px; border-top: 4px solid var(--f1-silver); text-align: center;">
+            <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--f1-silver); font-weight: 800; letter-spacing: 0.8px; display: block; margin-bottom: 10px;">
+                🥈 2º LUGAR
+            </span>
+            {% if corrida.segundo_foto %}
+            <div style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px; border: 2px solid var(--f1-silver);">
+                <img src="{{ corrida.segundo_foto }}" alt="{{ corrida.segundo_nome }}" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            {% endif %}
+            <h4 style="color: #fff; font-size: 1.15rem; margin-bottom: 4px;">
+                {{ corrida.segundo_nome or corrida.segundo_lugar }}
+            </h4>
+            <span style="color: var(--f1-text-muted); font-size: 0.85rem;">
+                {{ corrida.segundo_lugar if corrida.segundo_nome else 'Segundo Colocado' }}
+            </span>
+        </div>
+
+        <!-- 3º LUGAR -->
+        <div class="card" style="padding: 20px; border-top: 4px solid var(--f1-bronze); text-align: center;">
+            <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--f1-bronze); font-weight: 800; letter-spacing: 0.8px; display: block; margin-bottom: 10px;">
+                🥉 3º LUGAR
+            </span>
+            {% if corrida.terceiro_foto %}
+            <div style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px; border: 2px solid var(--f1-bronze);">
+                <img src="{{ corrida.terceiro_foto }}" alt="{{ corrida.terceiro_nome }}" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            {% endif %}
+            <h4 style="color: #fff; font-size: 1.15rem; margin-bottom: 4px;">
+                {{ corrida.terceiro_nome or corrida.terceiro_lugar }}
+            </h4>
+            <span style="color: var(--f1-text-muted); font-size: 0.85rem;">
+                {{ corrida.terceiro_lugar if corrida.terceiro_nome else 'Terceiro Colocado' }}
+            </span>
+        </div>
+
+        <!-- VOLTA MAIS RÁPIDA -->
+        <div class="card" style="padding: 20px; border-top: 4px solid var(--f1-green); text-align: center;">
+            <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--f1-green); font-weight: 800; letter-spacing: 0.8px; display: block; margin-bottom: 10px;">
+                🟣 VOLTA MAIS RÁPIDA (+1 PTO)
+            </span>
+            {% if corrida.volta_foto %}
+            <div style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px; border: 2px solid var(--f1-green);">
+                <img src="{{ corrida.volta_foto }}" alt="{{ corrida.volta_nome }}" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            {% endif %}
+            <h4 style="color: #fff; font-size: 1.15rem; margin-bottom: 4px;">
+                {{ corrida.volta_nome or 'Piloto' }}
+            </h4>
+            <span style="color: var(--f1-green); font-size: 0.85rem; font-weight: 700;">
+                ⏱️ {{ corrida.volta_mais_rapida or 'Tempo oficial' }}
+            </span>
+        </div>
+
+    </div>
+
+    <!-- CLASSIFICAÇÃO DETALHADA E RESUMO JORNALÍSTICO -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 40px;">
+        
+        <!-- CLASSIFICAÇÃO DETALHADA -->
+        <div class="card" style="padding: 25px;">
+            <h3 style="color: #fff; font-size: 1.2rem; margin-bottom: 18px; display: flex; align-items: center; gap: 8px;">
+                📊 Classificação Detalhada da Prova
+            </h3>
+            {% if corrida.classificacao_detalhada %}
+            <div style="background: rgba(0,0,0,0.3); border-radius: 6px; padding: 15px; font-family: monospace; font-size: 0.9rem; line-height: 1.7; color: #eee; white-space: pre-line;">
+{{ corrida.classificacao_detalhada }}
+            </div>
+            {% else %}
+            <p style="color: var(--f1-text-muted); font-size: 0.9rem;">
+                A tabela de tempos e classificação completa está sendo compilada pela equipe editorial do Setor F1.
+            </p>
+            {% endif %}
+        </div>
+
+        <!-- RESUMO DA CORRIDA -->
+        <div class="card" style="padding: 25px;">
+            <h3 style="color: #fff; font-size: 1.2rem; margin-bottom: 18px; display: flex; align-items: center; gap: 8px;">
+                📰 Resumo dos Fatos & Estratégia
+            </h3>
+            {% if corrida.noticias_resumo %}
+            <div style="color: #ddd; font-size: 0.95rem; line-height: 1.8;">
+                {{ corrida.noticias_resumo }}
+            </div>
+            {% else %}
+            <p style="color: var(--f1-text-muted); font-size: 0.9rem;">
+                Nenhum resumo técnico cadastrado para esta edição do Grande Prêmio.
+            </p>
+            {% endif %}
+        </div>
+
+    </div>
+    {% else %}
+    <!-- CASO SEJA PRÓXIMA CORRIDA -->
+    <div class="card" style="padding: 35px; text-align: center; margin-bottom: 40px;">
+        <span style="font-size: 3rem; display: block; margin-bottom: 12px;">🚦</span>
+        <h2 style="color: #fff; font-size: 1.6rem; margin-bottom: 10px;">Esta prova ainda vai acontecer!</h2>
+        <p style="color: var(--f1-text-muted); max-width: 600px; margin: 0 auto 20px; line-height: 1.6;">
+            Os resultados, pódio oficial, pole position e tempo da melhor volta serão publicados aqui em tempo real assim que os monopostos cruzarem a linha de chegada no circuito de <strong>{{ corrida.circuito }}</strong>.
+        </p>
+        <span class="race-badge-status badge-upcoming" style="padding: 8px 18px; font-size: 0.9rem;">
+            Aguardando largada em {{ corrida.data_corrida.strftime('%d/%m/%Y') }}
+        </span>
+    </div>
+    {% endif %}
+
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="{{ url_for('corridas') }}" class="btn btn-secondary" style="padding: 12px 28px;">
+            &larr; Voltar para o Calendário de Corridas
+        </a>
+    </div>
+</div>
+{% endblock %}

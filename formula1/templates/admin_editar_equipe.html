@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Equipe • {{ equipe.nome }} • Painel Setor F1{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary" style="margin-bottom: 25px;">
+        &larr; Voltar ao Painel Admin
+    </a>
+
+    <div class="card" style="padding: 35px; border-top: 5px solid {{ equipe.cor_primaria or 'var(--f1-red)' }};">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h1 style="color: #fff; font-size: 1.6rem; margin: 0;">
+                    🏢 Editar Equipe: {{ equipe.nome }}
+                </h1>
+                <p style="color: var(--f1-text-muted); font-size: 0.9rem; margin-top: 4px;">
+                    {{ equipe.nome_completo }}
+                </p>
+            </div>
+            {% if equipe.logo_url %}
+            <img src="{{ equipe.logo_url }}" alt="Logo {{ equipe.nome }}" style="height: 50px; max-width: 120px; object-fit: contain;">
+            {% endif %}
+        </div>
+
+        <form action="{{ url_for('admin_editar_equipe', id=equipe.id) }}" method="POST">
+            
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 18px;">
+                <div class="form-group">
+                    <label class="form-label">Nome Curto da Escuderia *</label>
+                    <input type="text" name="nome" class="form-control" value="{{ equipe.nome }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Razão Social / Nome Completo *</label>
+                    <input type="text" name="nome_completo" class="form-control" value="{{ equipe.nome_completo }}" required>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px;">
+                <div class="form-group">
+                    <label class="form-label">País de Origem</label>
+                    <input type="text" name="pais_origem" class="form-control" value="{{ equipe.pais_origem or '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Sede da Fábrica</label>
+                    <input type="text" name="sede" class="form-control" value="{{ equipe.sede or '' }}" placeholder="Ex: Maranello, Itália">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Chefe de Equipe (Team Principal)</label>
+                    <input type="text" name="chefe_equipe" class="form-control" value="{{ equipe.chefe_equipe or '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Unidade de Potência / Motor</label>
+                    <input type="text" name="motor" class="form-control" value="{{ equipe.motor or '' }}" placeholder="Ex: Ferrari, Mercedes, Honda">
+                </div>
+            </div>
+
+            <!-- CARRO E CORES -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--f1-card-border); border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h4 style="color: var(--f1-gold); font-size: 1rem; margin-bottom: 14px;">🏎️ Dados do Carro / Monoposto</h4>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Modelo do Monoposto</label>
+                        <input type="text" name="carro_modelo" class="form-control" value="{{ equipe.carro_modelo or '' }}" placeholder="Ex: SF-24, RB20, MCL38">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">URL da Foto do Carro</label>
+                        <input type="text" name="carro_imagem_url" class="form-control" value="{{ equipe.carro_imagem_url or '' }}" placeholder="https://exemplo.com/carro.png">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Cor Primária (Hex)</label>
+                        <input type="color" name="cor_primaria" class="form-control" value="{{ equipe.cor_primaria or '#E10600' }}" style="height: 44px; padding: 4px;">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">URL do Logo</label>
+                        <input type="text" name="logo_url" class="form-control" value="{{ equipe.logo_url or '' }}" placeholder="https://exemplo.com/logo.png">
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;">
+                <div class="form-group">
+                    <label class="form-label">Títulos de Construtores</label>
+                    <input type="number" name="titulos_construtores" class="form-control" value="{{ equipe.titulos_construtores or 0 }}">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ano de Estreia na F1</label>
+                    <input type="number" name="ano_estreia" class="form-control" value="{{ equipe.ano_estreia or '' }}" placeholder="Ex: 1950">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">História da Escuderia *</label>
+                <textarea name="historia" class="form-control" rows="5" required>{{ equipe.historia or '' }}</textarea>
+            </div>
+
+            <!-- PILOTOS VINCULADOS NESTA EQUIPE -->
+            <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--f1-card-border); border-radius: 8px; padding: 20px; margin-bottom: 25px;">
+                <h4 style="color: #fff; font-size: 0.95rem; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+                    <span>🏎️ Pilotos Vinculados a esta Equipe (Titulares & Reservas)</span>
+                    <a href="{{ url_for('admin_dashboard') }}#aba-pilotos" class="btn btn-secondary" style="font-size: 0.72rem; padding: 4px 10px;">
+                        + Gerenciar Pilotos
+                    </a>
+                </h4>
+
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    {% for p in pilotos %}
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 8px 14px; border-radius: 6px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.1rem;">{{ p.pais_codigo|bandeira }}</span>
+                            <span style="color: #fff; font-weight: 700;">#{{ p.numero }} {{ p.nome }}</span>
+                            <span class="race-badge-status {% if p.papel_equipe == 'titular' %}badge-finished{% else %}badge-upcoming{% endif %}" style="font-size: 0.68rem;">
+                                {{ '🏎️ Titular' if p.papel_equipe == 'titular' else '🛡️ Reserva / Testes' }}
+                            </span>
+                        </div>
+                        <a href="{{ url_for('admin_editar_piloto', id=p.id) }}" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.72rem; background: #2980b9;">
+                            ✏️ Editar Piloto
+                        </a>
+                    </div>
+                    {% else %}
+                    <p style="color: var(--f1-text-muted); font-size: 0.85rem; margin: 0;">
+                        Nenhum piloto vinculado a esta equipe no momento. Edite os pilotos no painel para atribuí-los a esta escuderia.
+                    </p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px;">
+                <button type="submit" class="btn btn-primary" style="padding: 12px 25px;">
+                    💾 Salvar Alterações da Equipe
+                </button>
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

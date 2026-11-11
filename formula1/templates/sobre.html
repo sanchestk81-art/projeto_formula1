@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Sobre o Projeto & Contato • F1 Hub{% endblock %}
+
+{% block content %}
+<div class="section-header">
+    <div>
+        <h1 class="section-title">Sobre Nós & Central de Contato</h1>
+        <p style="color: var(--f1-text-muted); font-size: 0.95rem; margin-top: 5px;">
+            Conheça o propósito deste projeto de Fórmula 1 e envie sua opinião para que possamos evoluir continuamente.
+        </p>
+    </div>
+</div>
+
+<div class="about-layout">
+    
+    <!-- COLUNA DA ESQUERDA: SOBRE O PROJETO -->
+    <section class="about-card">
+        <h2 style="font-size: 1.5rem; color: #fff; margin-bottom: 18px; display: flex; align-items: center; gap: 10px;">
+             Nosso Projeto
+        </h2>
+        
+        <p>
+            O <strong>Paddock Hub</strong> nasceu da paixão visceral pelo automobilismo e pelo universo fascinante da Fórmula 1 — o ápice da engenharia mecânica, da aerodinâmica e da velocidade humana.
+        </p>
+
+        <p>
+            Nosso objetivo é fornecer aos fãs da velocidade uma plataforma limpa, moderna e informativa, reunindo desde os últimos acontecimentos do paddock até a história detalhada de como cada piloto alcançou a elite do automobilismo mundial.
+        </p>
+
+        <p>
+            Aqui você encontra análises das equipes, as disputas milimétricas da última corrida e o calendário das próximas etapas que agitam o planeta.
+        </p>
+
+        <div style="margin-top: 25px; border-top: 1px solid var(--f1-card-border); padding-top: 20px;">
+            <h4 style="font-size: 0.85rem; text-transform: uppercase; color: #fff; margin-bottom: 10px;">
+                ⚙️ Tecnologias Utilizadas no Projeto:
+            </h4>
+            <div class="tech-tags">
+                <span class="tech-tag">Python 3</span>
+                <span class="tech-tag">Flask Framework</span>
+                <span class="tech-tag">Jinja2 Templates</span>
+                <span class="tech-tag">PostgreSQL Nativo</span>
+                <span class="tech-tag">Psycopg2 (Sem ORM)</span>
+                <span class="tech-tag">HTML5 & CSS3 Flexbox/Grid</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- COLUNA DA DIREITA: FORMULÁRIO DE CONTATO E FEEDBACK -->
+    <section class="contact-card">
+        <h2 style="font-size: 1.5rem; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">
+             Fale Conosco
+        </h2>
+        <p style="color: var(--f1-text-muted); font-size: 0.9rem; margin-bottom: 22px;">
+            Caso algo no site tenha ficado bom ou precise de melhorias, envie sua mensagem. Seu feedback é essencial!
+        </p>
+
+        <form action="{{ url_for('sobre') }}" method="POST">
+            <div class="form-group">
+                <label for="nome" class="form-label">Seu Nome *</label>
+                <input type="text" id="nome" name="nome" class="form-control" placeholder="Ex: Maria da Silva" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="form-label">Seu E-mail *</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="Ex: maria@email.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="tipo_feedback" class="form-label">Tipo de Mensagem *</label>
+                <select id="tipo_feedback" name="tipo_feedback" class="form-control" required>
+                    <option value="" disabled selected>Selecione se o site ficou bom ou ruim...</option>
+                    <option value="Elogio">👍 Elogio (Gostei do site)</option>
+                    <option value="Crítica">👎 Crítica (Algo que ficou ruim / Bug)</option>
+                    <option value="Sugestão">💡 Sugestão de Melhoria</option>
+                    <option value="Dúvida">❓ Dúvida Geral</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="assunto" class="form-label">Assunto *</label>
+                <input type="text" id="assunto" name="assunto" class="form-control" placeholder="Ex: Sugestão para a página de pilotos" required>
+            </div>
+
+            <div class="form-group">
+                <label for="mensagem" class="form-label">Mensagem *</label>
+                <textarea id="mensagem" name="mensagem" class="form-control" placeholder="Conte-nos o que achou da plataforma..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px;">
+                Enviar Mensagem &rarr;
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{{ url_for('mensagens') }}" style="color: var(--f1-text-muted); font-size: 0.85rem; text-decoration: underline;">
+                Ver feedbacks enviados pela comunidade &rarr;
+            </a>
+        </div>
+    </section>
+
+</div>
+{% endblock %}

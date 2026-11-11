@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Setor F1 • O Portal Definitivo do Automobilismo{% endblock %}</title>
+    <!-- Estilo CSS Customizado do Setor F1 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- CABEÇALHO E MENU DE NAVEGAÇÃO SETOR F1 -->
+    <header class="site-header">
+        <div class="container navbar">
+            <!-- NOME DO SITE EM TIPOGRAFIA ESPORTIVA (SEM IMAGEM TEMPORÁRIA) -->
+            <a href="{{ url_for('index') }}" class="brand-logo">
+                <span class="f1-badge">SETOR</span>
+                <span class="brand-title">F1</span>
+            </a>
+
+            <!-- Menu de navegação para todas as páginas -->
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' or request.endpoint == 'noticia_detalhe' %}active{% endif %}">Notícias</a></li>
+                    <li><a href="{{ url_for('pilotos') }}" class="{% if request.endpoint == 'pilotos' or request.endpoint == 'piloto_detalhe' %}active{% endif %}">Pilotos</a></li>
+                    <li><a href="{{ url_for('equipes') }}" class="{% if request.endpoint == 'equipes' %}active{% endif %}">Equipes</a></li>
+                    <li><a href="{{ url_for('corridas') }}" class="{% if request.endpoint == 'corridas' or request.endpoint == 'corrida_detalhe' %}active{% endif %}">Corridas</a></li>
+                    <li><a href="{{ url_for('loja') }}" class="{% if request.endpoint == 'loja' %}active{% endif %}">Loja Oficial 🛍️</a></li>
+
+                    <!-- DROPDOWN 'MAIS' PARA MANTER O MENU LIMPO COM A GALERIA -->
+                    <li class="nav-dropdown-item">
+                        <a href="javascript:void(0)" class="dropdown-trigger {% if request.endpoint in ['galeria', 'mensagens', 'sobre'] %}active{% endif %}">
+                            Mais ▾
+                        </a>
+                        <div class="nav-dropdown-menu">
+                            <a href="{{ url_for('galeria') }}" class="dropdown-link {% if request.endpoint == 'galeria' %}active{% endif %}">
+                                📸 Galeria de Fotos
+                            </a>
+                            <a href="{{ url_for('mensagens') }}" class="dropdown-link {% if request.endpoint == 'mensagens' %}active{% endif %}">
+                                💬 Mural de Feedbacks
+                            </a>
+                            <a href="{{ url_for('sobre') }}" class="dropdown-link {% if request.endpoint == 'sobre' %}active{% endif %}">
+                                ℹ️ Sobre & Contato
+                            </a>
+                        </div>
+                    </li>
+
+                    <!-- ÁREA DE CONTA E SESSÃO -->
+                    {% if session.get('usuario_id') %}
+                        {% if session.get('usuario_tipo') == 'admin' %}
+                            <li>
+                                <a href="{{ url_for('admin_dashboard') }}" class="btn-admin-nav {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+                                    ⚙️ Painel Admin
+                                </a>
+                            </li>
+                        {% else %}
+                            <li>
+                                <a href="{{ url_for('meus_pedidos') }}" class="{% if request.endpoint == 'meus_pedidos' %}active{% endif %}">
+                                    Meus Pedidos 📦
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li>
+                            <a href="{{ url_for('logout') }}" class="btn-logout" title="Sair da Conta">
+                                Sair ({{ session.get('usuario_nome').split(' ')[0] }})
+                            </a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="{{ url_for('login') }}" class="btn-auth-nav">
+                                Entrar / Cadastrar
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MENSAGENS FLASH (FEEDBACKS PARA O USUÁRIO) -->
+    <div class="container alerts-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <span>{{ message }}</span>
+                        <button class="alert-close" type="button">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="main-content">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- RODAPÉ SETOR F1 -->
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="f1-badge" style="font-size: 0.9rem; padding: 2px 7px;">SETOR</span>
+                <p>&copy; 2026 <strong>Setor F1</strong> • Portal de Automobilismo em Flask & PostgreSQL (Sem ORM).</p>
+            </div>
+            <div class="footer-nav">
+                <a href="{{ url_for('index') }}">Início</a>
+                <a href="{{ url_for('pilotos') }}">Pilotos</a>
+                <a href="{{ url_for('equipes') }}">Equipes</a>
+                <a href="{{ url_for('corridas') }}">Corridas</a>
+                <a href="{{ url_for('loja') }}">Loja</a>
+                <a href="{{ url_for('galeria') }}">Galeria 📸</a>
+                <a href="{{ url_for('sobre') }}">Contato</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

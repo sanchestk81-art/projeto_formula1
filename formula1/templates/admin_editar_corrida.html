@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Corrida • {{ corrida.nome_gp }} • Painel Setor F1{% endblock %}
+
+{% block content %}
+<div style="max-width: 950px; margin: 0 auto;">
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary" style="margin-bottom: 25px;">
+        &larr; Voltar ao Painel Admin
+    </a>
+
+    <div class="card" style="padding: 35px; border-top: 5px solid var(--f1-gold);">
+        <h1 style="color: #fff; font-size: 1.6rem; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+            ✏️ Editar Corrida: {{ corrida.nome_gp }}
+        </h1>
+
+        <form action="{{ url_for('admin_editar_corrida', id=corrida.id) }}" method="POST">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px;">
+                <div class="form-group">
+                    <label class="form-label">Ano / Temporada *</label>
+                    <input type="number" name="ano" class="form-control" value="{{ corrida.ano }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Número da Etapa (Rodada) *</label>
+                    <input type="number" name="rodada" class="form-control" value="{{ corrida.rodada }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Status da Corrida *</label>
+                    <select name="status" id="selectStatus" class="form-control" onchange="toggleCamposResultado(this.value)">
+                        <option value="proxima" {% if corrida.status == 'proxima' %}selected{% endif %}>Próxima Corrida (Futura)</option>
+                        <option value="concluida" {% if corrida.status == 'concluida' %}selected{% endif %}>Corrida Concluída (Publicar Resultados e Pódio)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 18px;">
+                <div class="form-group">
+                    <label class="form-label">Nome do Grande Prêmio *</label>
+                    <input type="text" name="nome_gp" class="form-control" value="{{ corrida.nome_gp }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Data da Corrida *</label>
+                    <input type="date" name="data_corrida" class="form-control" value="{{ corrida.data_corrida }}" required>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px;">
+                <div class="form-group">
+                    <label class="form-label">Circuito *</label>
+                    <input type="text" name="circuito" class="form-control" value="{{ corrida.circuito }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">País *</label>
+                    <input type="text" name="pais" class="form-control" value="{{ corrida.pais }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Código do País (Bandeira) *</label>
+                    <input type="text" name="pais_codigo" class="form-control" value="{{ corrida.pais_codigo }}" placeholder="Ex: br, mc, at, us" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Cidade</label>
+                    <input type="text" name="cidade" class="form-control" value="{{ corrida.cidade or '' }}">
+                </div>
+            </div>
+
+            <!-- RESULTADOS COMPLETOS: POLE POSITION, PÓDIO 1º/2º/3º E VOLTA RÁPIDA -->
+            <div id="secaoResultados" style="{% if corrida.status != 'concluida' %}display: none;{% endif %} background: rgba(255,255,255,0.03); border: 1px solid var(--f1-card-border); border-radius: 8px; padding: 22px; margin-top: 15px; margin-bottom: 20px;">
+                <h4 style="color: var(--f1-gold); margin-bottom: 16px; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+                    🏆 Resultados Oficiais: Pole Position, Pódio Completo e Volta Rápida
+                </h4>
+                
+                <!-- POLE POSITION -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed rgba(255,255,255,0.1);">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">⚡ Pole Position (Piloto Cadastrado)</label>
+                        <select name="pole_position_piloto_id" class="form-control">
+                            <option value="">Selecione o piloto da pole position...</option>
+                            {% for p in pilotos %}
+                            <option value="{{ p.id }}" {% if corrida.pole_position_piloto_id == p.id %}selected{% endif %}>{{ p.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Tempo da Pole (Ex: 1:10.270)</label>
+                        <input type="text" name="pole_position_tempo" class="form-control" value="{{ corrida.pole_position_tempo or '' }}" placeholder="Ex: 1:10.270">
+                    </div>
+                </div>
+
+                <!-- 1º LUGAR (VENCEDOR) -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed rgba(255,255,255,0.1);">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="color: var(--f1-gold);">🥇 1º Colocado / Vencedor (Piloto Cadastrado)</label>
+                        <select name="vencedor_piloto_id" class="form-control">
+                            <option value="">Selecione o piloto vencedor...</option>
+                            {% for p in pilotos %}
+                            <option value="{{ p.id }}" {% if corrida.vencedor_piloto_id == p.id %}selected{% endif %}>{{ p.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Equipe do Vencedor</label>
+                        <input type="text" name="vencedor_equipe" class="form-control" value="{{ corrida.vencedor_equipe or '' }}" placeholder="Ex: Ferrari, Red Bull, McLaren">
+                    </div>
+                </div>
+
+                <!-- 2º E 3º LUGAR DO PÓDIO -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed rgba(255,255,255,0.1);">
+                    
+                    <!-- 2º LUGAR -->
+                    <div>
+                        <div class="form-group">
+                            <label class="form-label" style="color: var(--f1-silver);">🥈 2º Colocado (Piloto Cadastrado)</label>
+                            <select name="segundo_piloto_id" class="form-control">
+                                <option value="">Selecione o 2º colocado...</option>
+                                {% for p in pilotos %}
+                                <option value="{{ p.id }}" {% if corrida.segundo_piloto_id == p.id %}selected{% endif %}>{{ p.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Texto / Equipe do 2º Colocado</label>
+                            <input type="text" name="segundo_lugar" class="form-control" value="{{ corrida.segundo_lugar or '' }}" placeholder="Ex: Charles Leclerc (Ferrari)">
+                        </div>
+                    </div>
+
+                    <!-- 3º LUGAR -->
+                    <div>
+                        <div class="form-group">
+                            <label class="form-label" style="color: var(--f1-bronze);">🥉 3º Colocado (Piloto Cadastrado)</label>
+                            <select name="terceiro_piloto_id" class="form-control">
+                                <option value="">Selecione o 3º colocado...</option>
+                                {% for p in pilotos %}
+                                <option value="{{ p.id }}" {% if corrida.terceiro_piloto_id == p.id %}selected{% endif %}>{{ p.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Texto / Equipe do 3º Colocado</label>
+                            <input type="text" name="terceiro_lugar" class="form-control" value="{{ corrida.terceiro_lugar or '' }}" placeholder="Ex: Lando Norris (McLaren)">
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- VOLTA MAIS RÁPIDA -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="color: var(--f1-green);">🟣 Piloto da Volta Mais Rápida</label>
+                        <select name="volta_rapida_piloto_id" class="form-control">
+                            <option value="">Selecione quem fez a melhor volta...</option>
+                            {% for p in pilotos %}
+                            <option value="{{ p.id }}" {% if corrida.volta_rapida_piloto_id == p.id %}selected{% endif %}>{{ p.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Tempo / Detalhe da Volta Rápida</label>
+                        <input type="text" name="volta_mais_rapida" class="form-control" value="{{ corrida.volta_mais_rapida or '' }}" placeholder="Ex: 1:14.200 (Volta 52)">
+                    </div>
+                </div>
+
+                <!-- CLASSIFICAÇÃO DETALHADA -->
+                <div class="form-group" style="margin-top: 15px; margin-bottom: 0;">
+                    <label class="form-label">📊 Tabela de Classificação Detalhada (Top 10 ou mais)</label>
+                    <textarea name="classificacao_detalhada" class="form-control" rows="6" placeholder="1. Max Verstappen (Red Bull) - 71 voltas&#10;2. Lando Norris (McLaren) +19.345s&#10;3. Charles Leclerc (Ferrari) +25.102s">{{ corrida.classificacao_detalhada or '' }}</textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Resumo dos Acontecimentos da Corrida</label>
+                <textarea name="noticias_resumo" class="form-control" rows="4">{{ corrida.noticias_resumo or '' }}</textarea>
+            </div>
+
+            <div style="display: flex; gap: 12px;">
+                <button type="submit" class="btn btn-primary" style="padding: 12px 25px;">
+                    💾 Atualizar Corrida
+                </button>
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleCamposResultado(status) {
+        const secao = document.getElementById('secaoResultados');
+        secao.style.display = (status === 'concluida') ? 'block' : 'none';
+    }
+</script>
+{% endblock %}
